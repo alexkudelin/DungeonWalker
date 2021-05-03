@@ -118,26 +118,7 @@ func get_objects():
 
 	return objects
 
-func get_objects_on_x_line(x):
-	var objects = []
-	var queue = [self]
-
-	while queue:
-		node = queue.pop_front()
-
-		if node:
-			if node.hall and node.hall.x1() <= x and x <= node.hall.x2():
-				objects.append(node.hall)
-
-			if node.room and node.room.x1() <= x and x <= node.room.x2():
-				objects.append(node.room)
-
-			queue.append(node.left)
-			queue.append(node.right)
-
-	return objects
-
-func get_objects_on_y_line(y):
+func get_objects_on_x_line(temp_x):
 	var objects = []
 	var queue = [self]
 
@@ -145,10 +126,29 @@ func get_objects_on_y_line(y):
 		var node = queue.pop_front()
 
 		if node:
-			if node.hall and node.hall.y1() <= y and y <= node.hall.y2():
+			if node.hall and node.hall.x1() <= temp_x and temp_x <= node.hall.x2():
 				objects.append(node.hall)
 
-			if node.room and node.room.y1() <= y and y <= node.room.y2():
+			if node.room and node.room.x1() <= temp_x and temp_x <= node.room.x2():
+				objects.append(node.room)
+
+			queue.append(node.left)
+			queue.append(node.right)
+
+	return objects
+
+func get_objects_on_y_line(temp_y):
+	var objects = []
+	var queue = [self]
+
+	while queue:
+		var node = queue.pop_front()
+
+		if node:
+			if node.hall and node.hall.y1() <= temp_y and temp_y <= node.hall.y2():
+				objects.append(node.hall)
+
+			if node.room and node.room.y1() <= temp_y and temp_y <= node.room.y2():
 				objects.append(node.room)
 
 			queue.append(node.left)

@@ -4,14 +4,15 @@ var TNode = load("TNode.gd")
 var Room = load("Room.gd")
 var Hall = load("Hall.gd")
 var Constants = load("Constants.gd")
+var rng = RandomNumberGenerator.new()
 
 onready var level_floor = $Floor
 onready var level_walls = $Walls
 
-func _place_walls(node):
+func _draw_dungeon(node):
 	if node:
-		_place_walls(node.left)
-		_place_walls(node.right)
+		_draw_dungeon(node.left)
+		_draw_dungeon(node.right)
 
 #		for x in range(node.x1(), node.x2()):
 #			level_floor.set_cell(x, node.y1(), 0)
@@ -73,7 +74,6 @@ func _place_walls(node):
 					level_walls.set_cell(x, y1, level_walls.tile_set.find_tile_by_name("stoneWall_S"))
 					level_walls.set_cell(x, y2, level_walls.tile_set.find_tile_by_name("stoneWall_S"))
 
-
 func _get_intersection(l1, l2):
 	var intersection = []
 
@@ -104,6 +104,18 @@ func _set_subtraction(from_set, what_subtract):
 		if from_set.has(item):
 			from_set.remove(from_set.find(item))
 
+func sort_by_x1(a, b):
+	return (a.x1() < b.x1())
+
+func sort_by_x2(a, b):
+	return (a.x2() < b.x2())
+
+func sort_by_y1(a, b):
+	return (a.y1() < b.y1())
+
+func sort_by_y2(a, b):
+	return (a.y2() < b.y2())
+
 func generate_halls(node):
 	if node.left and not node.left.room:
 		generate_halls(node.left)
@@ -126,7 +138,7 @@ func generate_halls(node):
 				intersection = _get_intersection(range(left_room.y1() + 1, left_room.y2() - 1), range(right_room.y1() + 1, right_room.y2() - 1))
 
 			if intersection:
-				var choice = intersection[randi() % intersection.size()]
+				var choice = intersection[rng.randi() % intersection.size()]
 
 				if split_dir == Constants.Direction.HORIZONTAL:
 					node.hall = Hall.new(
@@ -143,170 +155,171 @@ func generate_halls(node):
 		elif node.left.hall and node.right.room:
 			var boundary_box = node.left.get_boundary_box()
 
-			var x1 = boundary_box[0]
-			var y1 = boundary_box[1]
-			var x2 = boundary_box[2]
-			var y2 = boundary_box[3]
-
 			var objects = node.left.get_objects()
 			var intersection = []
 
 			if split_dir == Constants.Direction.HORIZONTAL:
 				intersection = _get_intersection(
-					range(x1 + 1, x2 - 1),
+					range(boundary_box[0] + 1, boundary_box[2] - 1),
 					range(node.right.room.x1() + 1, node.right.room.x2() - 1)
 				)
 			elif split_dir == Constants.Direction.VERTICAL:
 				intersection = _get_intersection(
-					range(y1 + 1, y2 - 1),
+					range(boundary_box[1] + 1, boundary_box[3] - 1),
 					range(node.right.room.y1() + 1, node.right.room.y2() - 1)
 				)
 
 			if intersection:
-				var borders = []
+				var ignore = []
 
 				for item in objects:
 					if split_dir == Constants.Direction.HORIZONTAL:
-						borders.add(item.x1)
-						borders.add(item.x2)
+						ignore.append(item.x1())
+						ignore.append(item.x2())
 					elif split_dir == Constants.Direction.VERTICAL:
-						borders.add(item.y1)
-						borders.add(item.y2)
+						ignore.append(item.y1())
+						ignore.append(item.y2())
 
-				_unique(borders)
-				_set_subtraction(intersection, borders)
+				_unique(ignore)
+				_set_subtraction(intersection, ignore)
 
-				var choice = intersection[randi() % intersection.size()]
+				var choice = intersection[rng.randi() % intersection.size()]
+				var children = []
 
 				if split_dir == Constants.Direction.HORIZONTAL:
 					children = node.left.get_objects_on_x_line(choice)
-					children.sort(key=lambda item: item.y2, reverse=True)
+					children.sort_custom(self, "sort_by_y2")
 
 					node.hall = Hall.new(
-						choice, children[0].y2(),
-						node.right.room.y1() - children[0].y2() + 1,
+						choice, children.back().y2(),
+						node.right.room.y1() - children.back().y2() + 1,
 						Constants.Direction.VERTICAL
 					)
 				elif split_dir == Constants.Direction.VERTICAL:
 					children = node.left.get_objects_on_y_line(choice)
-					children.sort(key=lambda item: item.x2, reverse=True)
+					children.sort_custom(self, "sort_by_x2")
 
 					node.hall = Hall.new(
-						children[0].x2(), choice,
-						node.right.room.x1() - children[0].x2() + 1,
+						children.back().x2(), choice,
+						node.right.room.x1() - children.back().x2() + 1,
 						Constants.Direction.HORIZONTAL
 					)
 		elif node.left.room and node.right.hall:
 			var boundary_box = node.right.get_boundary_box()
-
-			var x1 = boundary_box[0]
-			var y1 = boundary_box[1]
-			var x2 = boundary_box[2]
-			var y2 = boundary_box[3]
 
 			var objects = node.right.get_objects()
 			var intersection = []
 
 			if split_dir == Constants.Direction.HORIZONTAL:
 				intersection = _get_intersection(
-					range(x1 + 1, x2 - 1),
-					range(node.left.room.x1 + 1, node.left.room.x2 - 1)
+					range(boundary_box[0] + 1, boundary_box[2] - 1),
+					range(node.left.room.x1() + 1, node.left.room.x2() - 1)
 				)
 			elif split_dir == Constants.Direction.VERTICAL:
 				intersection = _get_intersection(
-					range(y1 + 1, y2 - 1),
+					range(boundary_box[1] + 1, boundary_box[3] - 1),
 					range(node.left.room.y1() + 1, node.left.room.y2() - 1)
 				)
 
 			if intersection:
-				var borders = []
+				var ignore = []
 
 				for item in objects:
 					if split_dir == Constants.Direction.HORIZONTAL:
-						borders.add(item.x1)
-						borders.add(item.x2)
+						ignore.append(item.x1())
+						ignore.append(item.x2())
 					elif split_dir == Constants.Direction.VERTICAL:
-						borders.add(item.y1)
-						borders.add(item.y2)
+						ignore.append(item.y1())
+						ignore.append(item.y2())
 
-				_unique(borders)
-				_set_subtraction(intersection, borders)
+				_unique(ignore)
+				_set_subtraction(intersection, ignore)
 
-				var choice = intersection[randi() % intersection.size()]
+				var choice = intersection[rng.randi() % intersection.size()]
+				var children = []
 
 				if split_dir == Constants.Direction.HORIZONTAL:
 					children = node.right.get_objects_on_x_line(choice)
-					children.sort(key=lambda item: item.y1)
+					children.sort_custom(self, "sort_by_y1")
 
-					node.hall = Hall(
+					node.hall = Hall.new(
 						choice, node.left.room.y2(),
-						children[0].y1() - node.left.room.y2()  + 1,
+						children.front().y1() - node.left.room.y2()  + 1,
 						Constants.Direction.VERTICAL
 					)
 				elif split_dir == Constants.Direction.VERTICAL:
 					children = node.right.get_objects_on_y_line(choice)
-					children.sort(key=lambda item: item.x1)
+					children.sort_custom(self, "sort_by_x1")
 
-					node.hall = Hall(
+					node.hall = Hall.new(
 						node.left.room.x2(), choice,
-						children[0].x1() - node.left.room.x2() + 1,
+						children.front().x1() - node.left.room.x2() + 1,
 						Constants.Direction.HORIZONTAL
 					)
-		# elif node.left.hall and node.right.hall:
-		# 	left_x1, left_y1, left_x2, left_y2 = node.left.get_boundary_box()
-		# 	right_x1, right_y1, right_x2, right_y2 = node.right.get_boundary_box()
+		elif node.left.hall and node.right.hall:
+			var left_box = node.left.get_boundary_box()
+			var right_box = node.right.get_boundary_box()
 
-		# 	if split_dir == Constants.Direction.HORIZONTAL:
-		# 		intersection = set(range(left_x1 + 1, left_x2 - 1)) & set(range(right_x1 + 1, right_x2 - 1))
-		# 	elif split_dir == Constants.Direction.VERTICAL:
-		# 		intersection = set(range(left_y1 + 1, left_y2 - 1)) & set(range(right_y1 + 1, right_y2 - 1))
+			var intersection = []
 
-		# 	if intersection:
-		# 		left_objects = node.left.get_objects()
-		# 		right_objects = node.right.get_objects()
+			if split_dir == Constants.Direction.HORIZONTAL:
+				intersection = _get_intersection(
+					range(left_box[0] + 1, left_box[2] - 1),
+					range(right_box[0] + 1, right_box[2] - 1)
+				)
+			elif split_dir == Constants.Direction.VERTICAL:
+				intersection = _get_intersection(
+					range(left_box[1] + 1, left_box[3] - 1),
+					range(right_box[1] + 1, right_box[3] - 1)
+				)
 
-		# 		borders = set()
+			if intersection:
+				var left_objects = node.left.get_objects()
+				var right_objects = node.right.get_objects()
 
-		# 		for item in left_objects + right_objects:
-		# 			if split_dir == Constants.Direction.HORIZONTAL:
-		# 				borders.add(item.x1)
-		# 				borders.add(item.x2)
-		# 			elif split_dir == Constants.Direction.VERTICAL:
-		# 				borders.add(item.y1)
-		# 				borders.add(item.y2)
+				var ignore = []
 
-		# 		intersection -= borders
+				for item in left_objects + right_objects:
+					if split_dir == Constants.Direction.HORIZONTAL:
+						ignore.append(item.x1())
+						ignore.append(item.x2())
+					elif split_dir == Constants.Direction.VERTICAL:
+						ignore.append(item.y1())
+						ignore.append(item.y2())
 
-		# 		choice = random.choice(list(intersection))
+				_unique(ignore)
+				_set_subtraction(intersection, ignore)
 
-		# 		if split_dir == Constants.Direction.HORIZONTAL:
-		# 			left_objects = node.left.get_objects_on_x_line(choice)
-		# 			left_objects.sort(key=lambda item: item.y2, reverse=True)
+				var choice = intersection[rng.randi() % intersection.size()]
 
-		# 			right_objects = node.right.get_objects_on_x_line(choice)
-		# 			right_objects.sort(key=lambda item: item.y1)
+				if split_dir == Constants.Direction.HORIZONTAL:
+					left_objects = node.left.get_objects_on_x_line(choice)
+					left_objects.sort_custom(self, "sort_by_y2")
 
-		# 			node.hall = Hall(
-		# 				choice, left_objects[0].y2,
-		# 				right_objects[0].y1 - left_objects[0].y2  + 1,
-		# 				Constants.Direction.VERTICAL
-		# 			)
-		# 		elif split_dir == Constants.Direction.VERTICAL:
-		# 			left_objects = node.left.get_objects_on_y_line(choice)
-		# 			left_objects.sort(key=lambda item: item.x2, reverse=True)
+					right_objects = node.right.get_objects_on_x_line(choice)
+					right_objects.sort_custom(self, "sort_by_y1")
 
-		# 			right_objects = node.right.get_objects_on_y_line(choice)
-		# 			right_objects.sort(key=lambda item: item.x1)
+					node.hall = Hall.new(
+						choice, left_objects.back().y2(),
+						right_objects.front().y1() - left_objects.back().y2()  + 1,
+						Constants.Direction.VERTICAL
+					)
+				elif split_dir == Constants.Direction.VERTICAL:
+					left_objects = node.left.get_objects_on_y_line(choice)
+					left_objects.sort_custom(self, "sort_by_x2")
 
-		# 			node.hall = Hall(
-		# 				left_objects[0].x2, choice,
-		# 				right_objects[0].x1 - left_objects[0].x2 + 1,
-		# 				Constants.Direction.HORIZONTAL
-		# 			)
+					right_objects = node.right.get_objects_on_y_line(choice)
+					right_objects.sort_custom(self, "sort_by_x1")
+
+					node.hall = Hall.new(
+						left_objects.back().x2(), choice,
+						right_objects.front().x1() - left_objects.back().x2() + 1,
+						Constants.Direction.HORIZONTAL
+					)
 
 func _get_split_direction():
 	var choices = [Constants.Direction.VERTICAL, Constants.Direction.HORIZONTAL]
-	return choices[randi() % choices.size()]
+	return choices[rng.randi() % choices.size()]
 
 func _get_wall(a, b):
 	var borders = [a, b]
@@ -314,7 +327,7 @@ func _get_wall(a, b):
 	borders.sort()
 	borders = range(borders[0], borders[1])
 
-	return borders[randi() % borders.size()]
+	return borders[rng.randi() % borders.size()]
 
 func generate_rooms(node):
 	if node != null:
@@ -327,10 +340,10 @@ func generate_rooms(node):
 			var x_range = range(Constants.WALL_SIZE, ceil((x2-x1)*0.2))
 			var y_range = range(Constants.WALL_SIZE, ceil((y2-y1)*0.2))
 
-			var dx1 = x_range[randi() % x_range.size()]
-			var dx2 = x_range[randi() % x_range.size()]
-			var dy1 = y_range[randi() % y_range.size()]
-			var dy2 = y_range[randi() % y_range.size()]
+			var dx1 = x_range[rng.randi() % x_range.size()]
+			var dx2 = x_range[rng.randi() % x_range.size()]
+			var dy1 = y_range[rng.randi() % y_range.size()]
+			var dy2 = y_range[rng.randi() % y_range.size()]
 
 			node.room = Room.new(x1+dx1, y1+dy1, (x2-dx2) - (x1+dx1), (y2-dy2) - (y1+dy1))
 		else:
@@ -403,22 +416,23 @@ func generate_tree(x1, x2, y1, y2, depth=1):
 
 	return {"left": left, "right": right}
 
-
 func _ready():
-	# seed(123)
-	# randomize()
-	# var w = 64
-	# var h = 64
+	var cur_seed = null
+
+	if cur_seed == null:
+		rng.randomize()
+	else:
+		rng.set_seed(cur_seed)
+
+	print_debug(rng.get_seed())
+
+	var w = 64
+	var h = 64
 	
-	# var children = generate_tree(0, w-1, 0, h-1)
+	var children = generate_tree(0, w-1, 0, h-1)
+	var root = TNode.new(children["left"], children["right"], 0, 0, w, h)
 
-	# var root = TNode.new(children["left"], children["right"], 0, 0, w, h)
-	# print_debug(root.get_split_direction())
-	# generate_rooms(root)
-	# generate_halls(root)
-	# print(root)
+	generate_rooms(root)
+	generate_halls(root)
 
-	# _place_walls(root)
-	var l = [1,2,2,3,4,5,1,3,2,4]
-	_unique(l)
-	print(l)
+	_draw_dungeon(root)

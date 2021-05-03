@@ -10,9 +10,19 @@ config_version=4
 
 _global_script_classes=[ {
 "base": "Reference",
+"class": "Constants",
+"language": "GDScript",
+"path": "res://Constants.gd"
+}, {
+"base": "Reference",
 "class": "Hall",
 "language": "GDScript",
 "path": "res://Hall.gd"
+}, {
+"base": "Reference",
+"class": "Room",
+"language": "GDScript",
+"path": "res://Room.gd"
 }, {
 "base": "Reference",
 "class": "TNode",
@@ -20,7 +30,9 @@ _global_script_classes=[ {
 "path": "res://TNode.gd"
 } ]
 _global_script_class_icons={
+"Constants": "",
 "Hall": "",
+"Room": "",
 "TNode": ""
 }
 
