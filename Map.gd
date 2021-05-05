@@ -6,73 +6,91 @@ var Hall = load("Hall.gd")
 var Constants = load("Constants.gd")
 var rng = RandomNumberGenerator.new()
 
-onready var level_floor = $Floor
-onready var level_walls = $Walls
+onready var FLOOR = $Floor
+onready var WALLS = $Walls
+
+onready var ROOM_FLOOR_TILE_1 = FLOOR.tile_set.find_tile_by_name("stone_E")
+onready var ROOM_FLOOR_TILE_2 = FLOOR.tile_set.find_tile_by_name("dirt_E")
+
+onready var HALL_FLOOR_TILE_1 = FLOOR.tile_set.find_tile_by_name("stoneInset_E")
+onready var HALL_FLOOR_TILE_2 = FLOOR.tile_set.find_tile_by_name("dirtTiles_E")
+
+onready var NODE_WALL_TILE_1 = FLOOR.tile_set.find_tile_by_name("planks_E")
+onready var NODE_WALL_TILE_2 = FLOOR.tile_set.find_tile_by_name("planksHole_E")
+
+onready var WALL_TILE_N_1 = WALLS.tile_set.find_tile_by_name("stoneWall_N")
+onready var WALL_TILE_S_1 = WALLS.tile_set.find_tile_by_name("stoneWall_S")
+onready var WALL_TILE_E_1 = WALLS.tile_set.find_tile_by_name("stoneWall_E")
+onready var WALL_TILE_W_1 = WALLS.tile_set.find_tile_by_name("stoneWall_W")
+
+onready var WALL_TILE_N_2 = WALLS.tile_set.find_tile_by_name("stoneWallHole_N")
+onready var WALL_TILE_S_2 = WALLS.tile_set.find_tile_by_name("stoneWallHole_S")
+onready var WALL_TILE_E_2 = WALLS.tile_set.find_tile_by_name("stoneWallHole_E")
+onready var WALL_TILE_W_2 = WALLS.tile_set.find_tile_by_name("stoneWallHole_W")
+
+onready var WALL_CORNER_TILE_N = WALLS.tile_set.find_tile_by_name("stoneWallCorner_N")
+onready var WALL_CORNER_TILE_S = WALLS.tile_set.find_tile_by_name("stoneWallCorner_S")
+onready var WALL_CORNER_TILE_E = WALLS.tile_set.find_tile_by_name("stoneWallCorner_E")
+onready var WALL_CORNER_TILE_W = WALLS.tile_set.find_tile_by_name("stoneWallCorner_W")
 
 func _draw_dungeon(node):
 	if node:
 		_draw_dungeon(node.left)
 		_draw_dungeon(node.right)
 
-#		for x in range(node.x1(), node.x2()):
-#			level_floor.set_cell(x, node.y1(), 0)
-#			level_floor.set_cell(x, node.y2(), 0)
-#
-#		for y in range(node.y1(), node.y2()):
-#			level_floor.set_cell(node.x1(), y, 0)
-#			level_floor.set_cell(node.x2(), y, 0)
+		# for x in range(node.x1(), node.x2()):
+		# 	FLOOR.set_cell(x, node.y1(), [NODE_WALL_TILE_1, NODE_WALL_TILE_2][x%2])
+		# 	FLOOR.set_cell(x, node.y2(), [NODE_WALL_TILE_1, NODE_WALL_TILE_2][x%2])
+
+		# for y in range(node.y1(), node.y2()+1):
+		# 	FLOOR.set_cell(node.x1(), y, [NODE_WALL_TILE_1, NODE_WALL_TILE_2][y%2])
+		# 	FLOOR.set_cell(node.x2(), y, [NODE_WALL_TILE_1, NODE_WALL_TILE_2][y%2])
 
 		if node.room:
-#			for x in range(node.room.x1() + 1, node.room.x2()):
-#				level_walls.set_cell(x, node.room.y1(), level_walls.tile_set.find_tile_by_name("stoneWall_S"))
-#				level_walls.set_cell(x, node.room.y2(), level_walls.tile_set.find_tile_by_name("stoneWall_N"))
-#
-#			for y in range(node.room.y1() + 1, node.room.y2()):
-#				level_walls.set_cell(node.room.x1(), y, level_walls.tile_set.find_tile_by_name("stoneWall_E"))
-#				level_walls.set_cell(node.room.x2(), y, level_walls.tile_set.find_tile_by_name("stoneWall_W"))
-#
-#			var topleft = level_walls.tile_set.find_tile_by_name("stoneWallCorner_S")
-#			level_walls.set_cell(node.room.x1(), node.room.y1(), topleft)
-#
-#			var bottomleft = level_walls.tile_set.find_tile_by_name("stoneWallCorner_E")
-#			level_walls.set_cell(node.room.x1(), node.room.y2(), bottomleft)
-#
-#			var topright = level_walls.tile_set.find_tile_by_name("stoneWallCorner_W")
-#			level_walls.set_cell(node.room.x2(), node.room.y1(), topright)
-#
-#			var bottomright = level_walls.tile_set.find_tile_by_name("stoneWallCorner_N")
-#			level_walls.set_cell(node.room.x2(), node.room.y2(), bottomright)
-			
-			for x in range(node.room.x1(), node.room.x2()):
-				for y in range(node.room.y1(), node.room.y2()):
-					level_floor.set_cell(x, y, level_floor.tile_set.find_tile_by_name("stone_E"))
+			var r = node.room
 
+			for x in range(r.x1(), r.x2()):
+				WALLS.set_cell(x, r.y1(), [WALL_TILE_S_1, WALL_TILE_S_2][x%2])
+				WALLS.set_cell(x, r.y2(), [WALL_TILE_N_1, WALL_TILE_N_2][x%2])
+
+			for y in range(r.y1(), r.y2()):
+				WALLS.set_cell(r.x1(), y, [WALL_TILE_E_1, WALL_TILE_E_2][y%2])
+				WALLS.set_cell(r.x2(), y, [WALL_TILE_W_1, WALL_TILE_W_2][y%2])
+
+			WALLS.set_cell(r.x1(), r.y1(), WALL_CORNER_TILE_S)
+			WALLS.set_cell(r.x1(), r.y2(), WALL_CORNER_TILE_E)
+			WALLS.set_cell(r.x2(), r.y1(), WALL_CORNER_TILE_W)
+			WALLS.set_cell(r.x2(), r.y2(), WALL_CORNER_TILE_N)
+
+			for x in range(r.x1(), r.x2()+1):
+				for y in range(r.y1(), r.y2()+1):
+					FLOOR.set_cell(x, y, [ROOM_FLOOR_TILE_1, ROOM_FLOOR_TILE_2][(x+y)%2])
 
 		if node.hall:
-			var x1 = node.hall.x1()
-			var x2 = node.hall.x2()
-			var y1 = node.hall.y1()
-			var y2 = node.hall.y2()
+			var h = node.hall
 
-			var split_dir = node.hall.get_direction()
+			for x in range(h.x1(), h.x1() + h.get_width()):
+				for y in range(h.y1(), h.y1() + h.get_height()):
+					FLOOR.set_cell(x, y, [HALL_FLOOR_TILE_1, HALL_FLOOR_TILE_2][(x+y)%2])
+					
+			var split_dir = h.get_direction()
 
-			if split_dir == Constants.Direction.VERTICAL:
-				x2 += 1
-			elif split_dir == Constants.Direction.HORIZONTAL:
-				y2 += 1
+			if split_dir == Constants.Direction.HORIZONTAL:
+				for x in range(h.x1(), h.x1() + h.get_width()):
+					WALLS.set_cell(x, h.y1(), [WALL_TILE_S_1, WALL_TILE_S_2][x%2])
+					WALLS.set_cell(x, h.y2(), [WALL_TILE_N_1, WALL_TILE_N_2][x%2])
 
-			for x in range(x1, x2):
-				for y in range(y1, y2):
-					level_floor.set_cell(x, y, level_floor.tile_set.find_tile_by_name("stoneTile_E"))
+				for y in range(h.y1(), h.y1() + h.get_height()):
+					WALLS.set_cell(h.x1()-1, y, -1)
+					WALLS.set_cell(h.x2(), y, -1)
+			elif split_dir == Constants.Direction.VERTICAL:
+				for y in range(h.y1(), h.y1() + h.get_height()):
+					WALLS.set_cell(h.x1(), y, [WALL_TILE_E_1, WALL_TILE_E_2][y%2])
+					WALLS.set_cell(h.x2(), y, [WALL_TILE_W_1, WALL_TILE_W_2][y%2])
 
-			if split_dir == Constants.Direction.VERTICAL:
-				for y in range(y1, y2):
-					level_walls.set_cell(x1, y, level_walls.tile_set.find_tile_by_name("stoneWall_E"))
-					level_walls.set_cell(x2, y, level_walls.tile_set.find_tile_by_name("stoneWall_E"))
-			elif split_dir == Constants.Direction.HORIZONTAL:
-				for x in range(x1, x2):
-					level_walls.set_cell(x, y1, level_walls.tile_set.find_tile_by_name("stoneWall_S"))
-					level_walls.set_cell(x, y2, level_walls.tile_set.find_tile_by_name("stoneWall_S"))
+				for x in range(h.x1(), h.x1() + h.get_width()):
+					WALLS.set_cell(x, h.y1()-1, -1)
+					WALLS.set_cell(x, h.y2(), -1)
 
 func _get_intersection(l1, l2):
 	var intersection = []
@@ -96,7 +114,7 @@ func _unique(l):
 				l.remove(idx2)
 			else:
 				idx2 += 1
-		
+
 		idx1 += 1
 
 func _set_subtraction(from_set, what_subtract):
@@ -133,23 +151,33 @@ func generate_halls(node):
 			var intersection = []
 
 			if split_dir == Constants.Direction.HORIZONTAL:
-				intersection = _get_intersection(range(left_room.x1() + 1, left_room.x2() - 1), range(right_room.x1() + 1, right_room.x2() - 1))
+				intersection = _get_intersection(range(left_room.x1()+2, left_room.x2()-1), range(right_room.x1()+2, right_room.x2()-1))
 			elif split_dir == Constants.Direction.VERTICAL:
-				intersection = _get_intersection(range(left_room.y1() + 1, left_room.y2() - 1), range(right_room.y1() + 1, right_room.y2() - 1))
+				intersection = _get_intersection(range(left_room.y1()+2, left_room.y2()-1), range(right_room.y1()+2, right_room.y2()-1))
 
 			if intersection:
-				var choice = intersection[rng.randi() % intersection.size()]
+				# var ignore = []
+				
+				# if split_dir == Constants.Direction.HORIZONTAL:
+				# 	ignore.append_array([left_room.x1()+2, left_room.x2()-2, right_room.x1()+2, right_room.x2()-2])
+				# elif split_dir == Constants.Direction.VERTICAL:
+				# 	ignore.append_array([left_room.y1()+2, left_room.y2()-2, right_room.y1()+2, right_room.y2()-2])
+					
+				# _unique(ignore)
+				# _set_subtraction(intersection, ignore)
 
+				var choice = intersection[rng.randi() % intersection.size()]
+					
 				if split_dir == Constants.Direction.HORIZONTAL:
 					node.hall = Hall.new(
-						choice, left_room.y2(),
-						right_room.y1() - left_room.y2() + 1,
+						choice, left_room.y2()+1,
+						right_room.y1() - left_room.y2(),
 						Constants.Direction.VERTICAL
 					)
 				elif split_dir == Constants.Direction.VERTICAL:
 					node.hall = Hall.new(
-						left_room.x2(), choice,
-						right_room.x1() - left_room.x2() + 1,
+						left_room.x2()+1, choice,
+						right_room.x1() - left_room.x2(),
 						Constants.Direction.HORIZONTAL
 					)
 		elif node.left.hall and node.right.room:
@@ -160,13 +188,13 @@ func generate_halls(node):
 
 			if split_dir == Constants.Direction.HORIZONTAL:
 				intersection = _get_intersection(
-					range(boundary_box[0] + 1, boundary_box[2] - 1),
-					range(node.right.room.x1() + 1, node.right.room.x2() - 1)
+					range(boundary_box[0], boundary_box[2]),
+					range(node.right.room.x1() + 2, node.right.room.x2()-1)
 				)
 			elif split_dir == Constants.Direction.VERTICAL:
 				intersection = _get_intersection(
-					range(boundary_box[1] + 1, boundary_box[3] - 1),
-					range(node.right.room.y1() + 1, node.right.room.y2() - 1)
+					range(boundary_box[1], boundary_box[3]),
+					range(node.right.room.y1() + 2, node.right.room.y2()-1)
 				)
 
 			if intersection:
@@ -174,11 +202,9 @@ func generate_halls(node):
 
 				for item in objects:
 					if split_dir == Constants.Direction.HORIZONTAL:
-						ignore.append(item.x1())
-						ignore.append(item.x2())
+						ignore.append_array([item.x1(), item.x1() + 1, item.x2(), item.x2()-1])
 					elif split_dir == Constants.Direction.VERTICAL:
-						ignore.append(item.y1())
-						ignore.append(item.y2())
+						ignore.append_array([item.y1(), item.y1() + 1, item.y2(), item.y2()-1])
 
 				_unique(ignore)
 				_set_subtraction(intersection, ignore)
@@ -191,8 +217,8 @@ func generate_halls(node):
 					children.sort_custom(self, "sort_by_y2")
 
 					node.hall = Hall.new(
-						choice, children.back().y2(),
-						node.right.room.y1() - children.back().y2() + 1,
+						choice, children.back().y2()+1,
+						node.right.room.y1() - children.back().y2(),
 						Constants.Direction.VERTICAL
 					)
 				elif split_dir == Constants.Direction.VERTICAL:
@@ -200,8 +226,8 @@ func generate_halls(node):
 					children.sort_custom(self, "sort_by_x2")
 
 					node.hall = Hall.new(
-						children.back().x2(), choice,
-						node.right.room.x1() - children.back().x2() + 1,
+						children.back().x2()+1, choice,
+						node.right.room.x1() - children.back().x2(),
 						Constants.Direction.HORIZONTAL
 					)
 		elif node.left.room and node.right.hall:
@@ -212,13 +238,13 @@ func generate_halls(node):
 
 			if split_dir == Constants.Direction.HORIZONTAL:
 				intersection = _get_intersection(
-					range(boundary_box[0] + 1, boundary_box[2] - 1),
-					range(node.left.room.x1() + 1, node.left.room.x2() - 1)
+					range(boundary_box[0], boundary_box[2]),
+					range(node.left.room.x1() + 2, node.left.room.x2()-1)
 				)
 			elif split_dir == Constants.Direction.VERTICAL:
 				intersection = _get_intersection(
-					range(boundary_box[1] + 1, boundary_box[3] - 1),
-					range(node.left.room.y1() + 1, node.left.room.y2() - 1)
+					range(boundary_box[1], boundary_box[3]),
+					range(node.left.room.y1() + 2, node.left.room.y2()-1)
 				)
 
 			if intersection:
@@ -226,11 +252,9 @@ func generate_halls(node):
 
 				for item in objects:
 					if split_dir == Constants.Direction.HORIZONTAL:
-						ignore.append(item.x1())
-						ignore.append(item.x2())
+						ignore.append_array([item.x1(), item.x1() + 1, item.x2(), item.x2()-1])
 					elif split_dir == Constants.Direction.VERTICAL:
-						ignore.append(item.y1())
-						ignore.append(item.y2())
+						ignore.append_array([item.y1(), item.y1() + 1, item.y2(), item.y2()-1])
 
 				_unique(ignore)
 				_set_subtraction(intersection, ignore)
@@ -243,8 +267,8 @@ func generate_halls(node):
 					children.sort_custom(self, "sort_by_y1")
 
 					node.hall = Hall.new(
-						choice, node.left.room.y2(),
-						children.front().y1() - node.left.room.y2()  + 1,
+						choice, node.left.room.y2()+1,
+						children.front().y1() - node.left.room.y2(),
 						Constants.Direction.VERTICAL
 					)
 				elif split_dir == Constants.Direction.VERTICAL:
@@ -252,8 +276,8 @@ func generate_halls(node):
 					children.sort_custom(self, "sort_by_x1")
 
 					node.hall = Hall.new(
-						node.left.room.x2(), choice,
-						children.front().x1() - node.left.room.x2() + 1,
+						node.left.room.x2()+1, choice,
+						children.front().x1() - node.left.room.x2(),
 						Constants.Direction.HORIZONTAL
 					)
 		elif node.left.hall and node.right.hall:
@@ -264,13 +288,13 @@ func generate_halls(node):
 
 			if split_dir == Constants.Direction.HORIZONTAL:
 				intersection = _get_intersection(
-					range(left_box[0] + 1, left_box[2] - 1),
-					range(right_box[0] + 1, right_box[2] - 1)
+					range(left_box[0], left_box[2]),
+					range(right_box[0], right_box[2])
 				)
 			elif split_dir == Constants.Direction.VERTICAL:
 				intersection = _get_intersection(
-					range(left_box[1] + 1, left_box[3] - 1),
-					range(right_box[1] + 1, right_box[3] - 1)
+					range(left_box[1], left_box[3]),
+					range(right_box[1], right_box[3])
 				)
 
 			if intersection:
@@ -281,11 +305,9 @@ func generate_halls(node):
 
 				for item in left_objects + right_objects:
 					if split_dir == Constants.Direction.HORIZONTAL:
-						ignore.append(item.x1())
-						ignore.append(item.x2())
+						ignore.append_array([item.x1(), item.x1() + 1, item.x2(), item.x2()-1])
 					elif split_dir == Constants.Direction.VERTICAL:
-						ignore.append(item.y1())
-						ignore.append(item.y2())
+						ignore.append_array([item.y1(), item.y1() + 1, item.y2(), item.y2()-1])
 
 				_unique(ignore)
 				_set_subtraction(intersection, ignore)
@@ -300,8 +322,8 @@ func generate_halls(node):
 					right_objects.sort_custom(self, "sort_by_y1")
 
 					node.hall = Hall.new(
-						choice, left_objects.back().y2(),
-						right_objects.front().y1() - left_objects.back().y2()  + 1,
+						choice, left_objects.back().y2()+1,
+						right_objects.front().y1() - left_objects.back().y2(),
 						Constants.Direction.VERTICAL
 					)
 				elif split_dir == Constants.Direction.VERTICAL:
@@ -312,8 +334,8 @@ func generate_halls(node):
 					right_objects.sort_custom(self, "sort_by_x1")
 
 					node.hall = Hall.new(
-						left_objects.back().x2(), choice,
-						right_objects.front().x1() - left_objects.back().x2() + 1,
+						left_objects.back().x2()+1, choice,
+						right_objects.front().x1() - left_objects.back().x2(),
 						Constants.Direction.HORIZONTAL
 					)
 
@@ -355,7 +377,7 @@ func generate_tree(x1, x2, y1, y2, depth=1):
 	var left = null
 	var right = null
 
-	if y2 <= y1 or x2 <= x1 or (y2 - y1 < 2*Constants.MIN_ROOM_SIZE or x2 - x1 < 2*Constants.MIN_ROOM_SIZE):
+	if y2 <= y1 or x2 <= x1 or (y2 - y1 < Constants.MIN_ROOM_SIZE or x2 - x1 < Constants.MIN_ROOM_SIZE):
 		return {"left": left, "right": right}
 
 	var wall_shift = Constants.MIN_ROOM_FREE_SPACE + Constants.WALL_SIZE
@@ -376,13 +398,13 @@ func generate_tree(x1, x2, y1, y2, depth=1):
 		return {"left": left, "right": right}
 
 	if (x2 - x1 > Constants.MIN_ROOM_SIZE) and direction == Constants.Direction.VERTICAL:
-		var wall = _get_wall(x1 + wall_shift, x2 - wall_shift)
-		var children = generate_tree(x1, wall, y1, y2, depth+1)
+		var wall = _get_wall(x1 + wall_shift, x2 - wall_shift) # wall aligns to the right (bottom) tile
+		var children = generate_tree(x1, wall-1, y1, y2, depth+1)
 
 		left = TNode.new(
 			children["left"],
 			children["right"],
-			x1, y1, wall-x1+1, y2-y1+1,
+			x1, y1, wall-x1, y2-y1+1,
 			depth
 		)
 
@@ -395,13 +417,13 @@ func generate_tree(x1, x2, y1, y2, depth=1):
 			depth
 		)
 	elif (y2 - y1 > Constants.MIN_ROOM_SIZE) and direction == Constants.Direction.HORIZONTAL:
-		var wall = _get_wall(y1 + wall_shift, y2 - wall_shift)
-		var children = generate_tree(x1, x2, y1, wall, depth+1)
+		var wall = _get_wall(y1 + wall_shift, y2 - wall_shift) # wall aligns to the right (bottom) tile
+		var children = generate_tree(x1, x2, y1, wall-1, depth+1)
 
 		left = TNode.new(
 			children["left"],
 			children["right"],
-			x1, y1, x2-x1+1, wall-y1+1,
+			x1, y1, x2-x1+1, wall-y1,
 			depth
 		)
 		
@@ -417,7 +439,7 @@ func generate_tree(x1, x2, y1, y2, depth=1):
 	return {"left": left, "right": right}
 
 func _ready():
-	var cur_seed = null
+	var cur_seed = 123
 
 	if cur_seed == null:
 		rng.randomize()
@@ -436,3 +458,9 @@ func _ready():
 	generate_halls(root)
 
 	_draw_dungeon(root)
+
+	var file = File.new()
+	file.open("user://dump.txt", File.WRITE)
+	file.store_string(str(root))
+	file.close()
+	# print(_get_intersection(range(2, 8), range(3, 8)))

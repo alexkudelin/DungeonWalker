@@ -165,7 +165,8 @@ func _to_string():
 		">" + "  x1=" + str(x1()) + "; y1=" + str(y1()) + 
 		"; x2=" + str(x2()) + "; y2=" + str(y2()) +
 		"; w=" + str(width) + "; h=" + str(height) + 
-		"; room=" + str(room) + "\n"
+		"; room=" + str(room) + 
+		"; hall=" + str(hall) + "\n"
 	)
 
 	if left:
