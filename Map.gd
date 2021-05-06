@@ -438,6 +438,15 @@ func generate_tree(x1, x2, y1, y2, depth=1):
 
 	return {"left": left, "right": right}
 
+func bsp(w, h):
+	var children = generate_tree(0, w-1, 0, h-1)
+	var root = TNode.new(children["left"], children["right"], 0, 0, w, h)
+
+	generate_rooms(root)
+	generate_halls(root)
+
+	_draw_dungeon(root)
+
 func _ready():
 	var cur_seed = 123
 
@@ -451,16 +460,4 @@ func _ready():
 	var w = 64
 	var h = 64
 	
-	var children = generate_tree(0, w-1, 0, h-1)
-	var root = TNode.new(children["left"], children["right"], 0, 0, w, h)
-
-	generate_rooms(root)
-	generate_halls(root)
-
-	_draw_dungeon(root)
-
-	var file = File.new()
-	file.open("user://dump.txt", File.WRITE)
-	file.store_string(str(root))
-	file.close()
-	# print(_get_intersection(range(2, 8), range(3, 8)))
+	bsp(w, h)
