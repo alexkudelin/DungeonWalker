@@ -399,12 +399,12 @@ func generate_tree(x1, x2, y1, y2, depth=1):
 
 	if (x2 - x1 > Constants.MIN_ROOM_SIZE) and direction == Constants.Direction.VERTICAL:
 		var wall = _get_wall(x1 + wall_shift, x2 - wall_shift) # wall aligns to the right (bottom) tile
-		var children = generate_tree(x1, wall-1, y1, y2, depth+1)
+		var children = generate_tree(x1, wall, y1, y2, depth+1)
 
 		left = TNode.new(
 			children["left"],
 			children["right"],
-			x1, y1, wall-x1, y2-y1+1,
+			x1, y1, wall-x1+1, y2-y1+1,
 			depth
 		)
 
@@ -418,12 +418,12 @@ func generate_tree(x1, x2, y1, y2, depth=1):
 		)
 	elif (y2 - y1 > Constants.MIN_ROOM_SIZE) and direction == Constants.Direction.HORIZONTAL:
 		var wall = _get_wall(y1 + wall_shift, y2 - wall_shift) # wall aligns to the right (bottom) tile
-		var children = generate_tree(x1, x2, y1, wall-1, depth+1)
+		var children = generate_tree(x1, x2, y1, wall, depth+1)
 
 		left = TNode.new(
 			children["left"],
 			children["right"],
-			x1, y1, x2-x1+1, wall-y1,
+			x1, y1, x2-x1+1, wall-y1+1,
 			depth
 		)
 		
