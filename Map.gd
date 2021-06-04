@@ -1,9 +1,11 @@
 extends Node2D
 
-var TNode = load("TNode.gd")
-var Room = load("Room.gd")
-var Hall = load("Hall.gd")
-var Constants = load("Constants.gd")
+var TNode = load("res://TNode.gd")
+var Room = load("res://Room.gd")
+var Hall = load("res://Hall.gd")
+var Constants = load("res://Constants.gd")
+var CellularAutomaton = load("res://CellularAutomaton.gd")
+
 var rng = RandomNumberGenerator.new()
 
 onready var FLOOR = $Floor
@@ -398,13 +400,13 @@ func generate_tree(x1, x2, y1, y2, depth=1):
 		return {"left": left, "right": right}
 
 	if (x2 - x1 > Constants.MIN_ROOM_SIZE) and direction == Constants.Direction.VERTICAL:
-		var wall = _get_wall(x1 + wall_shift, x2 - wall_shift) # wall aligns to the right (bottom) tile
-		var children = generate_tree(x1, wall-1, y1, y2, depth+1)
+		var wall = _get_wall(x1 + wall_shift, x2 - wall_shift)
+		var children = generate_tree(x1, wall, y1, y2, depth+1)
 
 		left = TNode.new(
 			children["left"],
 			children["right"],
-			x1, y1, wall-x1, y2-y1+1,
+			x1, y1, wall-x1+1, y2-y1+1,
 			depth
 		)
 
@@ -417,16 +419,16 @@ func generate_tree(x1, x2, y1, y2, depth=1):
 			depth
 		)
 	elif (y2 - y1 > Constants.MIN_ROOM_SIZE) and direction == Constants.Direction.HORIZONTAL:
-		var wall = _get_wall(y1 + wall_shift, y2 - wall_shift) # wall aligns to the right (bottom) tile
-		var children = generate_tree(x1, x2, y1, wall-1, depth+1)
+		var wall = _get_wall(y1 + wall_shift, y2 - wall_shift)
+		var children = generate_tree(x1, x2, y1, wall, depth+1)
 
 		left = TNode.new(
 			children["left"],
 			children["right"],
-			x1, y1, x2-x1+1, wall-y1,
+			x1, y1, x2-x1+1, wall-y1+1,
 			depth
 		)
-		
+
 		children = generate_tree(x1, x2, wall, y2, depth+1)
 
 		right = TNode.new(
@@ -442,10 +444,21 @@ func bsp(w, h):
 	var children = generate_tree(0, w-1, 0, h-1)
 	var root = TNode.new(children["left"], children["right"], 0, 0, w, h)
 
-	generate_rooms(root)
-	generate_halls(root)
+	# generate_rooms(root)
+	# generate_halls(root)
 
-	_draw_dungeon(root)
+	for leaf in root.get_leafs():
+		var ca = CellularAutomaton.new(0.50, 3, 5, 3, rng)
+		var res = ca.do_process(leaf.get_width()-1, leaf.get_height()-1)
+
+		for row in res:
+			print(row)
+
+		for i in range(leaf.get_width()-1):
+			for j in range(leaf.get_height()-1):
+				FLOOR.set_cell(leaf.x1() + i, leaf.y1() + j, [ROOM_FLOOR_TILE_1, ROOM_FLOOR_TILE_2, NODE_WALL_TILE_1][res[j][i]])
+
+	# _draw_dungeon(root)
 
 func _ready():
 	var cur_seed = 123
@@ -459,5 +472,12 @@ func _ready():
 
 	var w = 64
 	var h = 64
-	
+
 	bsp(w, h)
+
+	# var ca = CellularAutomaton.new(0.50, 3, 5, 3)
+	# var res = ca.do_process(w, h, cur_seed)
+
+	# for x in range(w):
+	# 	for y in range(h):
+	# 		FLOOR.set_cell(x, y, [ROOM_FLOOR_TILE_1, ROOM_FLOOR_TILE_2, NODE_WALL_TILE_1][res[y][x]])

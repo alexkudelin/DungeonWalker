@@ -156,6 +156,22 @@ func get_objects_on_y_line(temp_y):
 	
 	return objects
 
+func get_leafs():
+	var leafs = []
+	var q = [self]
+
+	while q:
+		var node = q.pop_front()
+
+		if node:
+			if node.left and node.right:
+				q.append(node.left)
+				q.append(node.right)
+			else:
+				leafs.append(node)
+
+	return leafs
+
 func _to_string():
 	var s = ""
 	for _i in range(depth):

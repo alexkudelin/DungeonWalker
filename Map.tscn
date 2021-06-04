@@ -21,7 +21,8 @@ cell_size = Vector2( 256, 128 )
 format = 1
 
 [node name="Camera2D" type="Camera2D" parent="."]
-offset = Vector2( 0, 4250 )
+position = Vector2( 509.594, 301.124 )
+offset = Vector2( 0, 4230 )
 current = true
 zoom = Vector2( 20, 20 )
 script = ExtResource( 4 )
