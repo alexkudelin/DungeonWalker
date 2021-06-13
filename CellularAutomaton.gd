@@ -2,24 +2,22 @@ class_name CellularAutomaton
 
 var rng = null
 
-const SPACE = 0  # alive
-const ROCK = 1  # dead
-const SPACE_OUTLINE = 2  # outline of space
+const ROOM_OUTLINE = 2  # outline of room
 
-# Best fallback options = (0.44, 5, 5, 3)
 var R = null
 var EPOCHS = null
-var MIN_NUM_OF_NB_TO_ROCK = null
+var MIN_NUM_OF_NB_TO_ROOM_WALL = null
 var MAX_NUM_OF_NB_TO_SPACE = null
+
+var matrix = []
 
 
 class DistributionSorter:
-	static func sort_by_purified_desc(a, b):
+	static func sort_by_pourified_desc(a, b):
 		return a[1] > b[1]
 
-func _init_matrix(width, height):
-	var matrix = []
 
+func _init_matrix(width, height):
 	for _y in range(height):
 		var row = []
 
@@ -45,80 +43,68 @@ func _copy_matrix(source):
 	return target
 
 
-func _initial_matrix_fill(matrix):
+func _initial_matrix_fill():
 	for y in range(len(matrix)):
 		for x in range(len(matrix[y])):
 			if x == 0 or x == len(matrix[y])-1 or y == 0 or y == len(matrix)-1:
-				matrix[y][x] = ROCK
+				matrix[y][x] = Constants.CA_Tiles.DEAD
 			else:
-				matrix[y][x] = [SPACE, ROCK][int(rng.randf() < R)]
+				matrix[y][x] = [Constants.CA_Tiles.ALIVE, Constants.CA_Tiles.DEAD][int(rng.randf() < R)]
 
 
-func _get_moore_neighbourhood(m, x, y, count_spaces=false):
-	var n = 0
+func _get_moore_neighbourhood(m, x, y):
+	var nb = []
 
-	for i in range(x-1, (x+1) + 1):
-		for j in range(y-1, (y+1) + 1):
+	for i in [x-1, x, x+1]:
+		for j in [y-1, y, y+1]:
+			if i == x and j == y:
+				continue
+
 			if (0 <= i and i < len(m[0])) and (0 <= j and j < len(m)):
-				n += m[j][i]
+				nb.append([i, j, m[j][i]])
 			else:
-				n += 1
+				nb.append(null)
 
-	if count_spaces:
-		return 8 - n
-	else:
-		return n
+	return nb
 
 
-func _get_von_neumann_neighbourhood_count(m, x, y, count_spaces=false):
-	var n = 0
+func _count_objects_in_nb(neighbourhood, objects):
+	var c = 0
 
-	for i in [-1, 1]:
-		if (0 <= (x+i) and (x+i) < len(m[0])):
-			n += m[y][x+i]
-		else:
-			n += 1
+	for item in neighbourhood:
+		if item != null and item[2] in objects:
+			c += 1
 
-	for j in [-1, 1]:
-		if (0 <= (y+j) and (y+j) < len(m)):
-			n += m[y+j][x]
-		else:
-			n += 1
-
-	if count_spaces:
-		return 4 - n
-	else:
-		return n
+	return c
 
 
-
-func _get_von_neumann_neighbourhood(m, x, y):
-	var n = []
+func _get_von_neumann_nb(m, x, y):
+	var nb = []
 
 	if y - 1 >= 0:
-		n.append([x, y-1, m[y-1][x]])
+		nb.append([x, y-1, m[y-1][x]])
 	else:
-		n.append(null)
+		nb.append(null)
 
 	if x + 1 < len(m[0]):
-		n.append([x+1, y, m[y][x+1]])
+		nb.append([x+1, y, m[y][x+1]])
 	else:
-		n.append(null)
+		nb.append(null)
 
 	if y + 1 < len(m):
-		n.append([x, y+1, m[y+1][x]])
+		nb.append([x, y+1, m[y+1][x]])
 	else:
-		n.append(null)
+		nb.append(null)
 
 	if x - 1 >= 0:
-		n.append([x-1, y, m[y][x-1]])
+		nb.append([x-1, y, m[y][x-1]])
 	else:
-		n.append(null)
+		nb.append(null)
 
-	return n
+	return nb
 	
 
-func _make_step(matrix):
+func _make_step():
 	var new_matrix = _copy_matrix(matrix)
 
 	var w = len(matrix[0])
@@ -126,12 +112,12 @@ func _make_step(matrix):
 
 	for x in range(w):
 		for y in range(h):
-			var n = _get_moore_neighbourhood(matrix, x, y)
+			var nr = _count_objects_in_nb(_get_moore_neighbourhood(matrix, x, y), [Constants.CA_Tiles.DEAD])
 
-			if n > MIN_NUM_OF_NB_TO_ROCK:
-				new_matrix[y][x] = ROCK
-			elif n < MAX_NUM_OF_NB_TO_SPACE:
-				new_matrix[y][x] = SPACE
+			if nr > MIN_NUM_OF_NB_TO_ROOM_WALL:
+				new_matrix[y][x] = Constants.CA_Tiles.DEAD
+			elif nr < MAX_NUM_OF_NB_TO_SPACE:
+				new_matrix[y][x] = Constants.CA_Tiles.ALIVE
 
 	return new_matrix
 
@@ -145,11 +131,11 @@ func __pourify(m, x, y, color):
 		var next_x = t[0]
 		var next_y = t[1]
 
-		if m[next_y][next_x] == SPACE:
+		if m[next_y][next_x] == Constants.CA_Tiles.ALIVE:
 			m[next_y][next_x] = color
 			pourified += 1
 
-			for item in _get_von_neumann_neighbourhood(m, next_x, next_y):
+			for item in _get_von_neumann_nb(m, next_x, next_y):
 				if item != null:
 					q.append([item[0], item[1]])
 
@@ -158,14 +144,14 @@ func __pourify(m, x, y, color):
 
 func _pourify(w, h, m):
 	var color_distribution = {}
-	var color = max(max(SPACE, ROCK), SPACE_OUTLINE) + 1
+	var color = 100
 	var counter = 0
 
 	var y = counter / w
 	var x = counter % w
 
 	while x*y < (w-1)*(h-1):
-		if m[y][x] == SPACE:
+		if m[y][x] == Constants.CA_Tiles.ALIVE:
 			color_distribution[color] = __pourify(m, x, y, color)
 			color += 1
 
@@ -182,108 +168,39 @@ func _find_dominant_color(color_distrib):
 	for k in color_distrib.keys():
 		color_distrib_arr.append([k, color_distrib[k]])
 
-	color_distrib_arr.sort_custom(DistributionSorter, "sort_by_purified_desc")
+	color_distrib_arr.sort_custom(DistributionSorter, "sort_by_pourified_desc")
 
 	return color_distrib_arr[0][0]
 
 
-func _fill_caverns(m):
-	var w = len(m[0])
-	var h = len(m)
-
-	var color_distribution = _pourify(w, h, m)
-
-	if color_distribution.keys().size() > 0:
-		var dominant_color = _find_dominant_color(color_distribution)
-
-		for x in range(w):
-			for y in range(h):
-				if m[y][x] != dominant_color:
-					m[y][x] = ROCK
-				else:
-					m[y][x] = SPACE
-
-
-func _set_border_rocks(m):
-	var w = len(m[0])
-	var h = len(m)
-
-	for x in range(w):
-		for y in range(h):
-			if x == 0 or x == w-1 or y == 0 or y == h-1:
-				m[y][x] = ROCK
-
-
-func _highlight_room_outline(m):
-	var w = len(m[0])
-	var h = len(m)
-
-	var q = []
-
-	for x in range(w):
-		for y in range(h):
-			if m[y][x] == ROCK and _get_von_neumann_neighbourhood_count(m, x, y, true) > 0:
-				q.append([x,y])
-
-	for t in q:
-		m[t[1]][t[0]] = SPACE_OUTLINE
-
-
-func _smooth_corners(m):
-	var w = len(m[0])
-	var h = len(m)
-
-	var q = []
-
-	for x in range(w):
-		for y in range(h):
-			if m[y][x] == ROCK:
-				var n = _get_von_neumann_neighbourhood(m, x, y)
-				var counter = 0
-
-				for nb in n:
-					if nb != null and m[nb[1]][nb[0]] == SPACE_OUTLINE:
-						counter += 1
-
-					if counter >= 2:
-						q.append([x, y])
-						break
-
-	for t in q:
-		m[t[1]][t[0]] = SPACE_OUTLINE
-
-
-func do_process(width, height):
-	var matrix = _init_matrix(width, height)
-	_initial_matrix_fill(matrix)
-
-	for _step in range(EPOCHS):
-		matrix = _make_step(matrix)
+func _smooth_singles():
+	var w = len(matrix[0])
+	var h = len(matrix)
 
 	while true:
 		var q = []
 
-		for x in range(1, width-1):
-			for y in range(1, height-1):
-				if matrix[y][x] == ROCK:
-					var nc = _get_von_neumann_neighbourhood_count(matrix, x, y, true)
+		for x in range(1, w-1):
+			for y in range(1, h-1):
+				if matrix[y][x] == Constants.CA_Tiles.DEAD:
+					var nb = _get_von_neumann_nb(matrix, x, y)
+					var nc = _count_objects_in_nb(nb, [Constants.CA_Tiles.ALIVE])
 
 					if nc >= 3:
 						q.append([x, y])
 
-						for item in _get_von_neumann_neighbourhood(matrix, x, y):
-							if item != null and item[2] == ROCK:
-								if _get_von_neumann_neighbourhood_count(matrix, item[0], item[1]) >= 3:
+						for item in _get_von_neumann_nb(matrix, x, y):
+							if item != null and item[2] == Constants.CA_Tiles.DEAD:
+								if _count_objects_in_nb(_get_von_neumann_nb(matrix, item[0], item[1]), [Constants.CA_Tiles.DEAD]) >= 3:
 									q.append([item[0], item[1]])
 					elif nc == 2:
-						var n = _get_von_neumann_neighbourhood(matrix, x, y)
+						var n = _get_von_neumann_nb(matrix, x, y)
 
-						var vertical_nbs_are_spaces = (n[0] and n[2] and n[0][2] == SPACE and n[2][2] == SPACE)
-						var horizontal_nbs_are_spaces = (n[1] and n[3] and n[1][2] == SPACE and n[3][2] == SPACE)
+						var vertical_nbs_are_spaces = (n[0] and n[2] and n[0][2] == Constants.CA_Tiles.ALIVE and n[2][2] == Constants.CA_Tiles.ALIVE)
+						var horizontal_nbs_are_spaces = (n[1] and n[3] and n[1][2] == Constants.CA_Tiles.ALIVE and n[3][2] == Constants.CA_Tiles.ALIVE)
 
 						if vertical_nbs_are_spaces or horizontal_nbs_are_spaces:
 							q.append([x, y])
-
 		if not q:
 			break
 		else:
@@ -291,20 +208,96 @@ func do_process(width, height):
 				var t = q.pop_front()
 				var x = t[0]
 				var y = t[1]
+	
+				matrix[y][x] = Constants.CA_Tiles.ALIVE
 
-				matrix[y][x] = SPACE
 
-	_fill_caverns(matrix)
-	_set_border_rocks(matrix)
-	_highlight_room_outline(matrix)
-	_smooth_corners(matrix)
+func _fill_caverns():
+	var w = len(matrix[0])
+	var h = len(matrix)
 
-	return matrix
+	var color_distribution = _pourify(w, h, matrix)
+
+	if color_distribution.keys().size() > 0:
+		var dominant_color = _find_dominant_color(color_distribution)
+
+		for x in range(w):
+			for y in range(h):
+				if matrix[y][x] != dominant_color:
+					matrix[y][x] = Constants.CA_Tiles.DEAD
+				else:
+					matrix[y][x] = Constants.CA_Tiles.ALIVE
+
+
+func _set_border_ROOM_WALLs():
+	var w = len(matrix[0])
+	var h = len(matrix)
+
+	for x in range(w):
+		for y in range(h):
+			if x == 0 or x == w-1 or y == 0 or y == h-1:
+				matrix[y][x] = Constants.CA_Tiles.DEAD
+
+
+# func _highlight_room_outline():
+# 	var w = len(matrix[0])
+# 	var h = len(matrix)
+
+# 	var q = []
+
+# 	for x in range(w):
+# 		for y in range(h):
+# 			if matrix[y][x] == Constants.CA_Tiles.DEAD:
+# 				var nb = _get_von_neumann_nb(matrix, x, y)
+
+# 				if _count_objects_in_nb(nb, [Constants.CA_Tiles.ALIVE]) > 0:
+# 					q.append([x,y])
+
+# 	for t in q:
+# 		matrix[t[1]][t[0]] = ROOM_OUTLINE
+
+
+# func _smooth_corners():
+# 	var w = len(matrix[0])
+# 	var h = len(matrix)
+
+# 	var q = []
+
+# 	for x in range(w):
+# 		for y in range(h):
+# 			if matrix[y][x] == Constants.CA_Tiles.DEAD:
+# 				var n = _get_von_neumann_nb(matrix, x, y)
+# 				var counter = 0
+
+# 				for nb in n:
+# 					if nb != null and matrix[nb[1]][nb[0]] == ROOM_OUTLINE:
+# 						counter += 1
+
+# 					if counter >= 2:
+# 						q.append([x, y])
+# 						break
+
+# 	for t in q:
+# 		matrix[t[1]][t[0]] = ROOM_OUTLINE
+
+
+func do_process(width, height):
+	_init_matrix(width, height)
+	_initial_matrix_fill()
+
+	for _step in range(EPOCHS):
+		matrix = _make_step()
+
+	_smooth_singles()
+	_fill_caverns()
+	_set_border_ROOM_WALLs()
+	# _highlight_room_outline()
+	# _smooth_corners()
 
 
 func _init(r, e, min_nbs_to_rock, max_nbs_to_space, _rng):
 	R = r
 	EPOCHS = e
-	MIN_NUM_OF_NB_TO_ROCK = min_nbs_to_rock
+	MIN_NUM_OF_NB_TO_ROOM_WALL = min_nbs_to_rock
 	MAX_NUM_OF_NB_TO_SPACE = max_nbs_to_space
 	rng = _rng

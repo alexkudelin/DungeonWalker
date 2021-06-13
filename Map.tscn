@@ -1,28 +1,28 @@
 [gd_scene load_steps=5 format=2]
 
 [ext_resource path="res://Map.gd" type="Script" id=1]
-[ext_resource path="res://Resources/floor.tres" type="TileSet" id=2]
-[ext_resource path="res://Resources/walls.tres" type="TileSet" id=3]
+[ext_resource path="res://Resources/16px_floor.tres" type="TileSet" id=2]
+[ext_resource path="res://Resources/16px_walls.tres" type="TileSet" id=3]
 [ext_resource path="res://Camera2D.gd" type="Script" id=4]
 
 [node name="Node2D" type="Node2D"]
 script = ExtResource( 1 )
 
 [node name="Floor" type="TileMap" parent="."]
-mode = 1
 tile_set = ExtResource( 2 )
-cell_size = Vector2( 256, 128 )
+cell_size = Vector2( 16, 16 )
+show_collision = true
+centered_textures = true
 format = 1
 
 [node name="Walls" type="TileMap" parent="."]
-mode = 1
 tile_set = ExtResource( 3 )
-cell_size = Vector2( 256, 128 )
+cell_size = Vector2( 16, 16 )
 format = 1
+tile_data = PoolIntArray( 458749, 53, 0, 524285, 53, 0 )
 
 [node name="Camera2D" type="Camera2D" parent="."]
 position = Vector2( 509.594, 301.124 )
-offset = Vector2( 0, 4230 )
+offset = Vector2( 0, 500 )
 current = true
-zoom = Vector2( 20, 20 )
 script = ExtResource( 4 )
