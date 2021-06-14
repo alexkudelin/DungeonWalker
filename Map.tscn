@@ -19,7 +19,6 @@ format = 1
 tile_set = ExtResource( 3 )
 cell_size = Vector2( 16, 16 )
 format = 1
-tile_data = PoolIntArray( 458749, 53, 0, 524285, 53, 0 )
 
 [node name="Camera2D" type="Camera2D" parent="."]
 position = Vector2( 509.594, 301.124 )

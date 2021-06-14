@@ -1,8 +1,12 @@
+extends Node
+
 class_name CellularAutomaton
+
+var Constants = load("res://Scripts/Utils/Constants.gd")
 
 var rng = null
 
-const ROOM_OUTLINE = 2  # outline of room
+# const ROOM_OUTLINE = 2  # outline of room
 
 var R = null
 var EPOCHS = null
@@ -229,7 +233,7 @@ func _fill_caverns():
 					matrix[y][x] = Constants.CA_Tiles.ALIVE
 
 
-func _set_border_ROOM_WALLs():
+func _set_borders():
 	var w = len(matrix[0])
 	var h = len(matrix)
 
@@ -290,7 +294,7 @@ func do_process(width, height):
 
 	_smooth_singles()
 	_fill_caverns()
-	_set_border_ROOM_WALLs()
+	_set_borders()
 	# _highlight_room_outline()
 	# _smooth_corners()
 

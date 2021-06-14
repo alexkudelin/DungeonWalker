@@ -1,6 +1,6 @@
 class_name TNode
 
-var Constants = load("Constants.gd")
+var Constants = load("res://Scripts/Utils/Constants.gd")
 
 var left = null setget set_left, get_left
 var right = null setget set_right, get_right
@@ -156,7 +156,7 @@ func get_objects_on_y_line(temp_y):
 	
 	return objects
 
-func get_leafs():
+func get_leaves():
 	var leafs = []
 	var q = [self]
 

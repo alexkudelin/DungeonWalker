@@ -1,13 +1,13 @@
 extends Node2D
 
-var TNode = load("res://TNode.gd")
-var Room = load("res://Room.gd")
-var Hall = load("res://Hall.gd")
-var Constants = load("res://Constants.gd")
-var CellularAutomaton = load("res://CellularAutomaton.gd")
+var TNode = load("res://Scripts/BSP/TNode.gd")
+var Room = load("res://Scripts/BSP/Room.gd")
+var Hall = load("res://Scripts/BSP/Hall.gd")
+var Constants = load("res://Scripts/Utils/Constants.gd")
+var CellularAutomaton = load("res://Scripts/CA/CellularAutomaton.gd")
 
-var BSP_Generator = load("res://BSP.gd")
-var BSP_CA_Generator = load("res://BSP_CA_Hybrid.gd")
+var BSP_Generator = load("res://Scripts/Generators/BSP.gd")
+var BSP_CA_Generator = load("res://Scripts/Generators/BSP_CA_Hybrid.gd")
 
 var rng = RandomNumberGenerator.new()
 
@@ -84,28 +84,6 @@ func _draw_dungeon(map):
 				WALLS.set_cell(x, y, CodeToTile[level_walls[y][x]])
 
 
-# func bsp_ca_hybrid(w, h):
-# 	var children = generate_tree(0, w-1, 0, h-1)
-# 	var root = TNode.new(children["left"], children["right"], 0, 0, w, h)
-
-# 	for leaf in root.get_leafs():
-# 		var ca = CellularAutomaton.new(0.55, 6, 6, 2, rng)
-# 		ca.do_process(leaf.get_width()-2, leaf.get_height()-2)
-# 		leaf.set_room(ca)
-
-# 		for i in range(leaf.get_width()-2):
-# 			for j in range(leaf.get_height()-2):
-# 				FLOOR.set_cell(leaf.x1() + i+1, leaf.y1() + j+1, [ROOM_FLOOR_TILE_1, -1, NODE_WALL_TILE_1][leaf.room.matrix[j][i]])
-
-#				if res[j][i] == 2:
-#					if is_vertical(res, i, j):
-#						WALLS.set_cell(leaf.x1() + i+1, leaf.y1() + j+1, [WALL_TILE_N, WALL_TILE_N_2][(i+j)%2])
-#					elif is_horizontal(res, i, j):
-#						WALLS.set_cell(leaf.x1() + i+1, leaf.y1() + j+1, [WALL_TILE_E, WALL_TILE_E_2][(i+j)%2])
-#					elif is_corner(res, i, j):
-#						pass
-
-
 func _clean(w, h):
 	for i in range(w):
 		for j in range(h):
@@ -131,8 +109,6 @@ func _process(_delta):
 
 		var bsp = BSP_Generator.new(rng)
 		bsp.run(w, h)
-		# bsp_ca_hybrid(w, h)
 
 		var map = bsp.get_map()
 		_draw_dungeon(map)
-

@@ -2,10 +2,10 @@ extends Node
 
 class_name BSP_Generator
 
-var TNode = load("res://TNode.gd")
-var Room = load("res://Room.gd")
-var Hall = load("res://Hall.gd")
-var Constants = load("res://Constants.gd")
+var TNode = load("res://Scripts/BSP/TNode.gd")
+var Room = load("res://Scripts/BSP/Room.gd")
+var Hall = load("res://Scripts/BSP/Hall.gd")
+var Constants = load("res://Scripts/Utils/Constants.gd")
 
 var rng = null
 var FLOOR = null

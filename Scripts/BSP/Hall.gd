@@ -1,6 +1,6 @@
 class_name Hall
 
-var Constants = load("Constants.gd")
+var Constants = load("res://Scripts/Utils/Constants.gd")
 
 var x = null
 var y = null
