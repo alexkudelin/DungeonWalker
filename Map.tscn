@@ -1,9 +1,9 @@
 [gd_scene load_steps=5 format=2]
 
-[ext_resource path="res://Map.gd" type="Script" id=1]
+[ext_resource path="res://Scripts/Map.gd" type="Script" id=1]
 [ext_resource path="res://Resources/16px_floor.tres" type="TileSet" id=2]
 [ext_resource path="res://Resources/16px_walls.tres" type="TileSet" id=3]
-[ext_resource path="res://Camera2D.gd" type="Script" id=4]
+[ext_resource path="res://Scripts/Camera2D.gd" type="Script" id=4]
 
 [node name="Node2D" type="Node2D"]
 script = ExtResource( 1 )
