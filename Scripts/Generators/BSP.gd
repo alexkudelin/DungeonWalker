@@ -2,7 +2,7 @@ extends Node
 
 class_name BSP_Generator
 
-var TNode = load("res://Scripts/BSP/TNode.gd")
+var BSPNode = load("res://Scripts/BSP/BSPNode.gd")
 var Room = load("res://Scripts/BSP/Room.gd")
 var Hall = load("res://Scripts/BSP/Hall.gd")
 var Constants = load("res://Scripts/Utils/Constants.gd")
@@ -60,6 +60,11 @@ func _fill_level(node):
 				for y in range(h.y1(), h.y1() + h.get_height()):
 					WALLS[y][h.x1()-1] = Constants.TileCodes.EMPTY
 					WALLS[y][h.x2()] = Constants.TileCodes.EMPTY
+
+				WALLS[h.y1()][h.x1()] = Constants.TileCodes.SW_CORNER
+				WALLS[h.y2()][h.x1()] = Constants.TileCodes.NE_CORNER
+				WALLS[h.y1()][h.x2()] = Constants.TileCodes.SE_CORNER
+				WALLS[h.y2()][h.x2()] = Constants.TileCodes.NW_CORNER
 			elif hall_direction == Constants.Direction.VERTICAL:
 				for y in range(h.y1(), h.y1() + h.get_height()):
 					WALLS[y][h.x1()] = Constants.TileCodes.WEST_WALL
@@ -392,7 +397,7 @@ func generate_tree(x1, x2, y1, y2, depth=1):
 		var wall = _get_wall(x1 + wall_shift, x2 - wall_shift)
 		var children = generate_tree(x1, wall, y1, y2, depth+1)
 
-		left = TNode.new(
+		left = BSPNode.new(
 			children["left"],
 			children["right"],
 			x1, y1, wall-x1+1, y2-y1+1,
@@ -401,7 +406,7 @@ func generate_tree(x1, x2, y1, y2, depth=1):
 
 		children = generate_tree(wall, x2, y1, y2, depth+1)
 
-		right = TNode.new(
+		right = BSPNode.new(
 			children["left"],
 			children["right"],
 			wall, y1, x2-wall+1, y2-y1+1,
@@ -411,7 +416,7 @@ func generate_tree(x1, x2, y1, y2, depth=1):
 		var wall = _get_wall(y1 + wall_shift, y2 - wall_shift)
 		var children = generate_tree(x1, x2, y1, wall, depth+1)
 
-		left = TNode.new(
+		left = BSPNode.new(
 			children["left"],
 			children["right"],
 			x1, y1, x2-x1+1, wall-y1+1,
@@ -420,7 +425,7 @@ func generate_tree(x1, x2, y1, y2, depth=1):
 
 		children = generate_tree(x1, x2, wall, y2, depth+1)
 
-		right = TNode.new(
+		right = BSPNode.new(
 			children["left"],
 			children["right"],
 			x1, wall, x2-x1+1, y2-wall+1,
@@ -432,7 +437,7 @@ func generate_tree(x1, x2, y1, y2, depth=1):
 
 func run(w, h):
 	var children = generate_tree(0, w-1, 0, h-1)
-	var root = TNode.new(children["left"], children["right"], 0, 0, w, h)
+	var root = BSPNode.new(children["left"], children["right"], 0, 0, w, h)
 	
 	generate_rooms(root)
 	generate_halls(root)

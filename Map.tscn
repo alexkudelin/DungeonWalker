@@ -22,6 +22,7 @@ format = 1
 
 [node name="Camera2D" type="Camera2D" parent="."]
 position = Vector2( 509.594, 301.124 )
-offset = Vector2( 0, 500 )
+offset = Vector2( 0, 192 )
 current = true
+zoom = Vector2( 0.5, 0.5 )
 script = ExtResource( 4 )

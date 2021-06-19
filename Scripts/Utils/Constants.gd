@@ -15,6 +15,7 @@ enum Direction {
 enum TileCodes {
 	EMPTY = -1,
 	ROOM_FLOOR = 0,
+	HALL_FLOOR,
 
 	NE_CORNER,
 	SE_CORNER,
@@ -32,4 +33,5 @@ enum TileCodes {
 enum CA_Tiles {
 	ALIVE,
 	DEAD,
+	OUTLINE,
 }

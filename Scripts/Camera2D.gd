@@ -1,6 +1,6 @@
 extends Camera2D
 
-const MOVE_SPEED = 5000
+const MOVE_SPEED = 3000
 const ZOOM_SPEED = 1.025
 
 func _process(delta):

@@ -3,6 +3,7 @@ extends Node
 class_name CellularAutomaton
 
 var Constants = load("res://Scripts/Utils/Constants.gd")
+var Utils = load("res://Scripts/Utils/Utils.gd")
 
 var rng = null
 
@@ -56,58 +57,6 @@ func _initial_matrix_fill():
 				matrix[y][x] = [Constants.CA_Tiles.ALIVE, Constants.CA_Tiles.DEAD][int(rng.randf() < R)]
 
 
-func _get_moore_neighbourhood(m, x, y):
-	var nb = []
-
-	for i in [x-1, x, x+1]:
-		for j in [y-1, y, y+1]:
-			if i == x and j == y:
-				continue
-
-			if (0 <= i and i < len(m[0])) and (0 <= j and j < len(m)):
-				nb.append([i, j, m[j][i]])
-			else:
-				nb.append(null)
-
-	return nb
-
-
-func _count_objects_in_nb(neighbourhood, objects):
-	var c = 0
-
-	for item in neighbourhood:
-		if item != null and item[2] in objects:
-			c += 1
-
-	return c
-
-
-func _get_von_neumann_nb(m, x, y):
-	var nb = []
-
-	if y - 1 >= 0:
-		nb.append([x, y-1, m[y-1][x]])
-	else:
-		nb.append(null)
-
-	if x + 1 < len(m[0]):
-		nb.append([x+1, y, m[y][x+1]])
-	else:
-		nb.append(null)
-
-	if y + 1 < len(m):
-		nb.append([x, y+1, m[y+1][x]])
-	else:
-		nb.append(null)
-
-	if x - 1 >= 0:
-		nb.append([x-1, y, m[y][x-1]])
-	else:
-		nb.append(null)
-
-	return nb
-	
-
 func _make_step():
 	var new_matrix = _copy_matrix(matrix)
 
@@ -116,7 +65,7 @@ func _make_step():
 
 	for x in range(w):
 		for y in range(h):
-			var nr = _count_objects_in_nb(_get_moore_neighbourhood(matrix, x, y), [Constants.CA_Tiles.DEAD])
+			var nr = Utils.count_objects_in_nb(Utils.get_moore_nb(matrix, x, y), [Constants.CA_Tiles.DEAD])
 
 			if nr > MIN_NUM_OF_NB_TO_ROOM_WALL:
 				new_matrix[y][x] = Constants.CA_Tiles.DEAD
@@ -139,7 +88,7 @@ func __pourify(m, x, y, color):
 			m[next_y][next_x] = color
 			pourified += 1
 
-			for item in _get_von_neumann_nb(m, next_x, next_y):
+			for item in Utils.get_von_neumann_nb(m, next_x, next_y):
 				if item != null:
 					q.append([item[0], item[1]])
 
@@ -176,7 +125,24 @@ func _find_dominant_color(color_distrib):
 
 	return color_distrib_arr[0][0]
 
+	
+func _fill_caverns():
+	var w = len(matrix[0])
+	var h = len(matrix)
 
+	var color_distribution = _pourify(w, h, matrix)
+	
+	if color_distribution.keys().size() > 0:
+		var dominant_color = _find_dominant_color(color_distribution)
+		
+		for x in range(w):
+			for y in range(h):
+				if matrix[y][x] != dominant_color:
+					matrix[y][x] = Constants.CA_Tiles.DEAD
+				else:
+					matrix[y][x] = Constants.CA_Tiles.ALIVE
+					
+		
 func _smooth_singles():
 	var w = len(matrix[0])
 	var h = len(matrix)
@@ -187,18 +153,18 @@ func _smooth_singles():
 		for x in range(1, w-1):
 			for y in range(1, h-1):
 				if matrix[y][x] == Constants.CA_Tiles.DEAD:
-					var nb = _get_von_neumann_nb(matrix, x, y)
-					var nc = _count_objects_in_nb(nb, [Constants.CA_Tiles.ALIVE])
+					var nb = Utils.get_von_neumann_nb(matrix, x, y)
+					var nc = Utils.count_objects_in_nb(nb, [Constants.CA_Tiles.ALIVE])
 
 					if nc >= 3:
 						q.append([x, y])
 
-						for item in _get_von_neumann_nb(matrix, x, y):
+						for item in nb:
 							if item != null and item[2] == Constants.CA_Tiles.DEAD:
-								if _count_objects_in_nb(_get_von_neumann_nb(matrix, item[0], item[1]), [Constants.CA_Tiles.DEAD]) >= 3:
+								if Utils.count_objects_in_nb(Utils.get_von_neumann_nb(matrix, item[0], item[1]), [Constants.CA_Tiles.DEAD]) >= 3:
 									q.append([item[0], item[1]])
 					elif nc == 2:
-						var n = _get_von_neumann_nb(matrix, x, y)
+						var n = Utils.get_von_neumann_nb(matrix, x, y)
 
 						var vertical_nbs_are_spaces = (n[0] and n[2] and n[0][2] == Constants.CA_Tiles.ALIVE and n[2][2] == Constants.CA_Tiles.ALIVE)
 						var horizontal_nbs_are_spaces = (n[1] and n[3] and n[1][2] == Constants.CA_Tiles.ALIVE and n[3][2] == Constants.CA_Tiles.ALIVE)
@@ -215,22 +181,53 @@ func _smooth_singles():
 	
 				matrix[y][x] = Constants.CA_Tiles.ALIVE
 
+func _is_vertical_triple(nb):
+	return (nb[0] and nb[2] and nb[0][2] == Constants.CA_Tiles.DEAD and nb[2][2] == Constants.CA_Tiles.DEAD)
 
-func _fill_caverns():
+
+func _is_horizontal_triple(nb):
+	return (nb[1] and nb[3] and nb[1][2] == Constants.CA_Tiles.DEAD and nb[3][2] == Constants.CA_Tiles.DEAD)
+
+
+func _smooth():
 	var w = len(matrix[0])
 	var h = len(matrix)
 
-	var color_distribution = _pourify(w, h, matrix)
+	while true:
+		var q = []
 
-	if color_distribution.keys().size() > 0:
-		var dominant_color = _find_dominant_color(color_distribution)
+		for x in range(1, w-1):
+			for y in range(1, h-1):
 
-		for x in range(w):
-			for y in range(h):
-				if matrix[y][x] != dominant_color:
-					matrix[y][x] = Constants.CA_Tiles.DEAD
-				else:
-					matrix[y][x] = Constants.CA_Tiles.ALIVE
+				if matrix[y][x] == Constants.CA_Tiles.ALIVE:
+					var nb = Utils.get_von_neumann_nb(matrix, x, y)
+					var nc = Utils.count_objects_in_nb(nb, [Constants.CA_Tiles.ALIVE])
+
+					if nc == 2:
+						if nb[0] and nb[2] and nb[0][2] == Constants.CA_Tiles.ALIVE and nb[2][2] == Constants.CA_Tiles.ALIVE:
+							q.append(nb[1])
+							q.append(nb[3])
+						elif nb[1] and nb[3] and nb[1][2] == Constants.CA_Tiles.ALIVE and nb[3][2] == Constants.CA_Tiles.ALIVE:
+							q.append(nb[0])
+							q.append(nb[2])
+
+					nb = Utils.get_moore_nb(matrix, x, y)
+					nc = Utils.count_objects_in_nb(nb, [Constants.CA_Tiles.DEAD])
+
+					if nc == 2:
+						if (nb[0] and nb[7] and nb[0][2] == Constants.CA_Tiles.DEAD and nb[7][2] == Constants.CA_Tiles.DEAD):
+							q.append(nb[0])
+							q.append(nb[7])
+						elif(nb[2] and nb[5] and nb[2][2] == Constants.CA_Tiles.DEAD and nb[5][2] == Constants.CA_Tiles.DEAD):
+							q.append(nb[2])
+							q.append(nb[5])
+
+		if not q:
+			break
+		else:
+			while q:
+				var p = q.pop_front()
+				matrix[p[1]][p[0]] = Constants.CA_Tiles.ALIVE
 
 
 func _set_borders():
@@ -243,46 +240,51 @@ func _set_borders():
 				matrix[y][x] = Constants.CA_Tiles.DEAD
 
 
-# func _highlight_room_outline():
-# 	var w = len(matrix[0])
-# 	var h = len(matrix)
+func _highlight_room_outline():
+	var w = len(matrix[0])
+	var h = len(matrix)
 
-# 	var q = []
+	var q = []
 
-# 	for x in range(w):
-# 		for y in range(h):
-# 			if matrix[y][x] == Constants.CA_Tiles.DEAD:
-# 				var nb = _get_von_neumann_nb(matrix, x, y)
+	while true:
+		for x in range(w):
+			for y in range(h):
+				if matrix[y][x] == Constants.CA_Tiles.DEAD:
+					var nb = Utils.get_von_neumann_nb(matrix, x, y)
 
-# 				if _count_objects_in_nb(nb, [Constants.CA_Tiles.ALIVE]) > 0:
-# 					q.append([x,y])
+					if Utils.count_objects_in_nb(nb, [Constants.CA_Tiles.ALIVE]) > 0:
+						q.append([x,y])
 
-# 	for t in q:
-# 		matrix[t[1]][t[0]] = ROOM_OUTLINE
+		if not q:
+			break
+
+		while q:
+			var t = q.pop_front()
+			matrix[t[1]][t[0]] = Constants.CA_Tiles.OUTLINE
 
 
-# func _smooth_corners():
-# 	var w = len(matrix[0])
-# 	var h = len(matrix)
+func _smooth_corners():
+	var w = len(matrix[0])
+	var h = len(matrix)
 
-# 	var q = []
+	var q = []
 
-# 	for x in range(w):
-# 		for y in range(h):
-# 			if matrix[y][x] == Constants.CA_Tiles.DEAD:
-# 				var n = _get_von_neumann_nb(matrix, x, y)
-# 				var counter = 0
+	for x in range(w):
+		for y in range(h):
+			if matrix[y][x] == Constants.CA_Tiles.DEAD:
+				var n = Utils.get_von_neumann_nb(matrix, x, y)
+				var counter = 0
 
-# 				for nb in n:
-# 					if nb != null and matrix[nb[1]][nb[0]] == ROOM_OUTLINE:
-# 						counter += 1
+				for nb in n:
+					if nb and matrix[nb[1]][nb[0]] == Constants.CA_Tiles.OUTLINE:
+						counter += 1
 
-# 					if counter >= 2:
-# 						q.append([x, y])
-# 						break
+					if counter >= 2:
+						q.append([x, y])
+						break
 
-# 	for t in q:
-# 		matrix[t[1]][t[0]] = ROOM_OUTLINE
+	for p in q:
+		matrix[p[1]][p[0]] = Constants.CA_Tiles.OUTLINE
 
 
 func do_process(width, height):
@@ -292,11 +294,11 @@ func do_process(width, height):
 	for _step in range(EPOCHS):
 		matrix = _make_step()
 
-	_smooth_singles()
+	_set_borders()
 	_fill_caverns()
+	_smooth()
 	_set_borders()
 	# _highlight_room_outline()
-	# _smooth_corners()
 
 
 func _init(r, e, min_nbs_to_rock, max_nbs_to_space, _rng):

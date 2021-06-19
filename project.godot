@@ -9,6 +9,11 @@
 config_version=4
 
 _global_script_classes=[ {
+"base": "Reference",
+"class": "BSPNode",
+"language": "GDScript",
+"path": "res://Scripts/BSP/BSPNode.gd"
+}, {
 "base": "Node",
 "class": "BSP_CA_Generator",
 "language": "GDScript",
@@ -18,6 +23,11 @@ _global_script_classes=[ {
 "class": "BSP_Generator",
 "language": "GDScript",
 "path": "res://Scripts/Generators/BSP.gd"
+}, {
+"base": "Reference",
+"class": "CARoom",
+"language": "GDScript",
+"path": "res://Scripts/CA/Room.gd"
 }, {
 "base": "Node",
 "class": "CellularAutomaton",
@@ -40,18 +50,20 @@ _global_script_classes=[ {
 "path": "res://Scripts/BSP/Room.gd"
 }, {
 "base": "Reference",
-"class": "TNode",
+"class": "Utils",
 "language": "GDScript",
-"path": "res://Scripts/BSP/TNode.gd"
+"path": "res://Scripts/Utils/Utils.gd"
 } ]
 _global_script_class_icons={
+"BSPNode": "",
 "BSP_CA_Generator": "",
 "BSP_Generator": "",
+"CARoom": "",
 "CellularAutomaton": "",
 "Constants": "",
 "Hall": "",
 "Room": "",
-"TNode": ""
+"Utils": ""
 }
 
 [application]
@@ -59,6 +71,11 @@ _global_script_class_icons={
 config/name="DungeonWalker"
 run/main_scene="res://Map.tscn"
 config/icon="res://icon.png"
+
+[display]
+
+window/size/width=960
+window/size/height=960
 
 [input]
 

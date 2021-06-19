@@ -1,4 +1,4 @@
-class_name TNode
+class_name BSPNode
 
 var Constants = load("res://Scripts/Utils/Constants.gd")
 
