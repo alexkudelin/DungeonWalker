@@ -17,9 +17,24 @@ var WALLS = null
 
 var m = {
 	Constants.CA_Tiles.ALIVE: [Constants.TileCodes.ROOM_FLOOR],
-	Constants.CA_Tiles.OUTLINE: [Constants.TileCodes.ROOM_FLOOR],
+	Constants.CA_Tiles.OUTLINE: [Constants.TileCodes.HALL_FLOOR],
 	Constants.CA_Tiles.DEAD: [Constants.TileCodes.EMPTY],
 }
+
+func _outline(w, h):
+	var outline = []
+
+	for x in range(w):
+		for y in range(h):
+			if FLOOR[y][x] == Constants.TileCodes.ROOM_FLOOR:
+				var nbhood = Utils.get_moore_nb(FLOOR, x, y)
+				for nb in nbhood:
+					if nb and nb[2] == Constants.TileCodes.EMPTY:
+						outline.append([nb[0], nb[1]])
+
+	for item in outline:
+		FLOOR[item[1]][item[0]] = Constants.TileCodes.HALL_FLOOR
+
 
 func _fill_level(node):
 	if node:
@@ -155,6 +170,7 @@ func run(w, h):
 
 	_init_level(w, h)
 	_fill_level(root)
+	_outline(w, h)
 
 
 func get_map():
