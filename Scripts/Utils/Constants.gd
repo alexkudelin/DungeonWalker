@@ -27,6 +27,8 @@ enum TileCodes {
 	SOUTH_WALL,
 	WEST_WALL,
 
+	WALL,
+
 	NODE_WALL = 100 # should be last :)
 }
 

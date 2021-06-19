@@ -16,9 +16,9 @@ var FLOOR = null
 var WALLS = null
 
 var m = {
-	Constants.CA_Tiles.ALIVE: [Constants.TileCodes.ROOM_FLOOR],
-	Constants.CA_Tiles.OUTLINE: [Constants.TileCodes.HALL_FLOOR],
-	Constants.CA_Tiles.DEAD: [Constants.TileCodes.EMPTY],
+	Constants.CA_Tiles.ALIVE: Constants.TileCodes.ROOM_FLOOR,
+	Constants.CA_Tiles.OUTLINE: Constants.TileCodes.HALL_FLOOR,
+	Constants.CA_Tiles.DEAD: Constants.TileCodes.EMPTY,
 }
 
 func _outline(w, h):
@@ -34,6 +34,7 @@ func _outline(w, h):
 
 	for item in outline:
 		FLOOR[item[1]][item[0]] = Constants.TileCodes.HALL_FLOOR
+		WALLS[item[1]][item[0]] = Constants.TileCodes.WALL
 
 
 func _fill_level(node):
@@ -59,7 +60,7 @@ func _fill_level(node):
 
 			for i in range(r.get_width()):
 				for j in range(r.get_height()):
-					FLOOR[r.y1() + j][r.x1() + i] = m[r.ca.matrix[j][i]][0]
+					FLOOR[r.y1()+j][r.x1()+i] = m[r.ca.matrix[j][i]]
 
 		for x in range(node.x1(), node.x2()):
 			FLOOR[node.y1()][x] = Constants.TileCodes.NODE_WALL
@@ -75,7 +76,7 @@ func _fill_level(node):
 				var y = int(p[1])
 
 				if FLOOR[y][x] != Constants.CA_Tiles.ALIVE:
-					FLOOR[y][x] = m[Constants.CA_Tiles.ALIVE][0]
+					FLOOR[y][x] = m[Constants.CA_Tiles.ALIVE]
 
 
 func _init_level(w, h):
