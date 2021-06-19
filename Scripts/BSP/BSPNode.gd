@@ -157,7 +157,7 @@ func get_objects_on_y_line(temp_y):
 	return objects
 
 func get_leaves():
-	var leafs = []
+	var leaves = []
 	var q = [self]
 
 	while q:
@@ -168,9 +168,25 @@ func get_leaves():
 				q.append(node.left)
 				q.append(node.right)
 			else:
-				leafs.append(node)
+				leaves.append(node)
 
-	return leafs
+	return leaves
+
+func get_rooms():
+	var rooms = []
+	var q = [self]
+
+	while q:
+		var node = q.pop_front()
+
+		if node:
+			if node.room:
+				rooms.append(node.room)
+			else:
+				q.append(node.left)
+				q.append(node.right)
+
+	return rooms
 
 func _to_string():
 	var s = ""
