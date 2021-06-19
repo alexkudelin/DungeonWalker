@@ -54,13 +54,13 @@ func _fill_level(node):
 			FLOOR[y][node.x1()] = Constants.TileCodes.NODE_WALL
 			FLOOR[y][node.x2()] = Constants.TileCodes.NODE_WALL
 
-#		if node.hall:
-#			for p in Utils.line([node.hall[0], node.hall[1]], [node.hall[2], node.hall[3]]):
-#				var x = int(p[0])
-#				var y = int(p[1])
-#
-#				if FLOOR[y][x] != Constants.CA_Tiles.ALIVE:
-#					FLOOR[y][x] = m[Constants.CA_Tiles.ALIVE][0]
+		if node.hall:
+			for p in Utils.line([node.hall[0], node.hall[1]], [node.hall[2], node.hall[3]]):
+				var x = int(p[0])
+				var y = int(p[1])
+
+				if FLOOR[y][x] != Constants.CA_Tiles.ALIVE:
+					FLOOR[y][x] = m[Constants.CA_Tiles.ALIVE][0]
 
 
 func _init_level(w, h):
@@ -85,21 +85,21 @@ func _generate_rooms(root):
 		))
 
 
-func _get_closest_points(node1, node2):
+func _get_closest_points(room1, room2):
 	var border_r1 = []
 	var border_r2 = []
 
-	for i in range(node1.room.matrix[0].size()):
-		for j in range(node1.room.matrix.size()):
-			if node1.room.matrix[j][i] in [Constants.CA_Tiles.OUTLINE, Constants.CA_Tiles.ALIVE]:
-				if Utils.count_objects_in_nb(Utils.get_von_neumann_nb(node1.room.matrix, i, j), [Constants.CA_Tiles.ALIVE]) > 0:
-					border_r1.append([node1.x1() + i, node1.y1() + j])
+	for i in range(room1.get_width()):
+		for j in range(room1.get_height()):
+			if room1.ca.matrix[j][i] == Constants.CA_Tiles.ALIVE:
+				if Utils.count_objects_in_nb(Utils.get_von_neumann_nb(room1.ca.matrix, i, j), [Constants.CA_Tiles.ALIVE]) > 0:
+					border_r1.append([room1.x1()+i, room1.y1()+j])
 
-	for i in range(node2.room.matrix[0].size()):
-		for j in range(node2.room.matrix.size()):
-			if node2.room.matrix[j][i] in [Constants.CA_Tiles.OUTLINE, Constants.CA_Tiles.ALIVE]:
-				if Utils.count_objects_in_nb(Utils.get_von_neumann_nb(node2.room.matrix, i, j), [Constants.CA_Tiles.ALIVE]) > 0:
-					border_r2.append([node2.x1() + i, node2.y1() + j])
+	for i in range(room2.get_width()):
+		for j in range(room2.get_height()):
+			if room2.ca.matrix[j][i] == Constants.CA_Tiles.ALIVE:
+				if Utils.count_objects_in_nb(Utils.get_von_neumann_nb(room2.ca.matrix, i, j), [Constants.CA_Tiles.ALIVE]) > 0:
+					border_r2.append([room2.x1()+i, room2.y1()+j])
 
 	var x1 = null
 	var y1 = null
@@ -131,28 +131,27 @@ func _generate_halls(node):
 
 	if node.left and node.right:
 		if node.left.room and node.right.room:
-			node.hall = _get_closest_points(node.left, node.right)
+			node.hall = _get_closest_points(node.left.room, node.right.room)
 		elif node.left.hall and node.right.room:
-			var left_leaves = node.left.get_leaves()
-			node.hall = _get_closest_points(left_leaves[randi() % left_leaves.size()], node.right)
+			var left_rooms = node.left.get_rooms()
+			node.hall = _get_closest_points(left_rooms[randi() % left_rooms.size()], node.right.room)
 		elif node.left.room and node.right.hall:
-			var right_leaves = node.right.get_leaves()
-			node.hall = _get_closest_points(node.left, right_leaves[randi() % right_leaves.size()])
+			var right_rooms = node.right.get_rooms()
+			node.hall = _get_closest_points(node.left.room, right_rooms[randi() % right_rooms.size()])
 		elif node.left.hall and node.right.hall:
-			var left_leaves = node.left.get_leaves()
-			var right_leaves = node.right.get_leaves()
+			var left_rooms = node.left.get_rooms()
+			var right_rooms = node.right.get_rooms()
 
-			node.hall = _get_closest_points(left_leaves[randi() % left_leaves.size()], right_leaves[randi() % right_leaves.size()])
+			node.hall = _get_closest_points(left_rooms[randi() % left_rooms.size()], right_rooms[randi() % right_rooms.size()])
 
 
 func run(w, h):
 	var bsp_gen = BSP_Generator.new(rng)
 	var children = bsp_gen.generate_tree(0, w-1, 0, h-1)
 	var root = BSPNode.new(children["left"], children["right"], 0, 0, w, h)
-	# var root = BSPNode.new(null, null, 0, 0, w, h)
 
 	_generate_rooms(root)
-#	_generate_halls(root)
+	_generate_halls(root)
 
 	_init_level(w, h)
 	_fill_level(root)
