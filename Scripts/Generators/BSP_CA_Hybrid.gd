@@ -25,23 +25,23 @@ func _fill_level(node):
 	if node:
 		_fill_level(node.left)
 		_fill_level(node.right)
-#
+
 		if node.room:
 			var r = node.room
-#
-#			# for x in range(r.x1(), r.x2()+1):
-#			# 	WALLS[r.y1()][x] = Constants.TileCodes.NORTH_WALL
-#			# 	WALLS[r.y2()][x] = Constants.TileCodes.SOUTH_WALL
-#
-#			# for y in range(r.y1(), r.y2()+1):
-#			# 	WALLS[y][r.x1()] = Constants.TileCodes.WEST_WALL
-#			# 	WALLS[y][r.x2()] = Constants.TileCodes.EAST_WALL
-#
-#			# WALLS[r.y1()][r.x1()] = Constants.TileCodes.NW_CORNER
-#			# WALLS[r.y1()][r.x2()] = Constants.TileCodes.NE_CORNER
-#			# WALLS[r.y2()][r.x1()] = Constants.TileCodes.SW_CORNER
-#			# WALLS[r.y2()][r.x2()] = Constants.TileCodes.SE_CORNER
-#
+
+			# for x in range(r.x1(), r.x2()+1):
+			# 	WALLS[r.y1()][x] = Constants.TileCodes.NORTH_WALL
+			# 	WALLS[r.y2()][x] = Constants.TileCodes.SOUTH_WALL
+
+			# for y in range(r.y1(), r.y2()+1):
+			# 	WALLS[y][r.x1()] = Constants.TileCodes.WEST_WALL
+			# 	WALLS[y][r.x2()] = Constants.TileCodes.EAST_WALL
+
+			# WALLS[r.y1()][r.x1()] = Constants.TileCodes.NW_CORNER
+			# WALLS[r.y1()][r.x2()] = Constants.TileCodes.NE_CORNER
+			# WALLS[r.y2()][r.x1()] = Constants.TileCodes.SW_CORNER
+			# WALLS[r.y2()][r.x2()] = Constants.TileCodes.SE_CORNER
+
 			for i in range(r.get_width()):
 				for j in range(r.get_height()):
 					FLOOR[r.y1() + j][r.x1() + i] = m[r.ca.matrix[j][i]][0]
