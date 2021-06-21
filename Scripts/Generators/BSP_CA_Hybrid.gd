@@ -40,6 +40,59 @@ func _fill_level(node):
 		_fill_level(node.left)
 		_fill_level(node.right)
 
+		if node.hall:
+			var p1 = node.hall[0]
+			var p2 = node.hall[1]
+			var d = node.hall[2]
+
+			if Utils.distance(p1, [0, 0]) > Utils.distance(p2, [0, 0]):
+				var temp_p1 = p1
+				p1 = p2
+				p2 = temp_p1
+
+			var i = 0
+			var wide = (rng.randi() % 2 == 0)
+
+			for p in Utils.line(p1, p2, d):
+				var x = ceil(p[0])
+				var y = ceil(p[1])
+
+				if FLOOR[y][x] != Constants.FloorTileCode.MID_FLOOR:
+					FLOOR[y][x] = Constants.FloorTileCode.MID_FLOOR
+
+				var extra_points = []
+
+				if wide:
+					extra_points = [
+						[x-1, y],
+						[x-1, y-1],
+						[x  , y-1],
+						[x+1, y-1],
+						[x+1, y],
+						[x+1, y+1],
+						[x  , y+1],
+						[x-1, y+1],
+					]
+				else:
+					if i % 2 == 0:
+						extra_points = [
+							[x+1, y],
+							[x+1, y+1],
+							[x  , y+1],
+						]
+					else:
+						extra_points = [
+							[x  , y+1],
+							[x-1, y+1],
+							[x-1, y]
+						]
+
+					i += 1
+
+				for ep in extra_points:
+					if FLOOR[ep[1]][ep[0]] != Constants.FloorTileCode.MID_FLOOR:
+						FLOOR[ep[1]][ep[0]] = Constants.FloorTileCode.MID_FLOOR
+
 		if node.room:
 			var r = node.room
 
@@ -69,21 +122,6 @@ func _fill_level(node):
 						FLOOR[y][x] = Constants.FloorTileCode.EMPTY
 						WALLS[y][x] = Constants.WallTileCode.EMPTY
 
-#		for x in range(node.x1(), node.x2()):
-#			FLOOR[node.y1()][x] = Constants.FloorTileCode.NODE_WALL
-#			FLOOR[node.y2()][x] = Constants.FloorTileCode.NODE_WALL
-#
-#		for y in range(node.y1(), node.y2()+1):
-#			FLOOR[y][node.x1()] = Constants.FloorTileCode.NODE_WALL
-#			FLOOR[y][node.x2()] = Constants.FloorTileCode.NODE_WALL
-
-		if node.hall:
-			for p in Utils.line([node.hall[0], node.hall[1]], [node.hall[2], node.hall[3]]):
-				var x = int(p[0])
-				var y = int(p[1])
-
-				FLOOR[y][x] = Constants.FloorTileCode.MID_FLOOR
-
 
 func _init_level(w, h):
 	FLOOR = []
@@ -107,41 +145,24 @@ func _generate_rooms(root):
 		))
 
 
-func _get_closest_points(room1, room2):
-	var border_r1 = []
-	var border_r2 = []
+func _get_hall_path(room1, room2):
+	var room1_bbox = room1.get_boundary_box()
+	var room2_bbox = room2.get_boundary_box()
 
-	for i in range(room1.get_width()):
-		for j in range(room1.get_height()):
-			if room1.ca.matrix[j][i] == Constants.CA_Tiles.ALIVE:
-				if Utils.count_objects_in_nb(Utils.get_von_neumann_nb(room1.ca.matrix, i, j), [Constants.CA_Tiles.ALIVE]) > 0:
-					border_r1.append([room1.x1()+i, room1.y1()+j])
+	var room1_center_point = [room1.x1() + ceil((room1_bbox[2] + room1_bbox[0])/2), room1.y1() + ceil((room1_bbox[3] + room1_bbox[1])/2)]
+	var room2_center_point = [room2.x1() + ceil((room2_bbox[2] + room2_bbox[0])/2), room2.y1() + ceil((room2_bbox[3] + room2_bbox[1])/2)]
 
-	for i in range(room2.get_width()):
-		for j in range(room2.get_height()):
-			if room2.ca.matrix[j][i] == Constants.CA_Tiles.ALIVE:
-				if Utils.count_objects_in_nb(Utils.get_von_neumann_nb(room2.ca.matrix, i, j), [Constants.CA_Tiles.ALIVE]) > 0:
-					border_r2.append([room2.x1()+i, room2.y1()+j])
+	room1_center_point[0] += rng.randi_range(-3, 3)
+	room1_center_point[1] += rng.randi_range(-3, 3)
 
-	var x1 = null
-	var y1 = null
-	var x2 = null
-	var y2 = null
+	room2_center_point[0] += rng.randi_range(-3, 3)
+	room2_center_point[1] += rng.randi_range(-3, 3)
 
-	var min_length = INF
-
-	for p1 in border_r1:
-		for p2 in border_r2:
-			var l = Utils.distance(p1, p2)
-
-			if l < min_length:
-				min_length = l
-				x1 = p1[0]
-				y1 = p1[1]
-				x2 = p2[0]
-				y2 = p2[1]
-
-	return [x1, y1, x2+1, y2+1]
+	return [
+		room1_center_point,
+		room2_center_point,
+		Utils.distance(room1_center_point, room2_center_point)
+	]
 
 
 func _generate_halls(node):
@@ -153,18 +174,32 @@ func _generate_halls(node):
 
 	if node.left and node.right:
 		if node.left.room and node.right.room:
-			node.hall = _get_closest_points(node.left.room, node.right.room)
+			node.hall = _get_hall_path(node.left.room, node.right.room)
 		elif node.left.hall and node.right.room:
-			var left_rooms = node.left.get_rooms()
-			node.hall = _get_closest_points(left_rooms[rng.randi() % left_rooms.size()], node.right.room)
-		elif node.left.room and node.right.hall:
-			var right_rooms = node.right.get_rooms()
-			node.hall = _get_closest_points(node.left.room, right_rooms[rng.randi() % right_rooms.size()])
-		elif node.left.hall and node.right.hall:
-			var left_rooms = node.left.get_rooms()
-			var right_rooms = node.right.get_rooms()
+			var paths = []
 
-			node.hall = _get_closest_points(left_rooms[rng.randi() % left_rooms.size()], right_rooms[rng.randi() % right_rooms.size()])
+			for lr in node.left.get_rooms():
+				paths.append(_get_hall_path(lr, node.right.room))
+
+			paths.sort_custom(Utils.DistanceSorter, "sort_asc")
+			node.hall = paths[0]
+		elif node.left.room and node.right.hall:
+			var paths = []
+
+			for rr in node.right.get_rooms():
+				paths.append(_get_hall_path(rr, node.left.room))
+
+			paths.sort_custom(Utils.DistanceSorter, "sort_asc")
+			node.hall = paths[0]
+		elif node.left.hall and node.right.hall:
+			var paths = []
+
+			for lr in node.left.get_rooms():
+				for rr in node.right.get_rooms():
+					paths.append(_get_hall_path(rr, lr))
+
+			paths.sort_custom(Utils.DistanceSorter, "sort_asc")
+			node.hall = paths[0]
 
 
 func run(w, h):

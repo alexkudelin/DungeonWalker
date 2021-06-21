@@ -1,5 +1,8 @@
 class_name Utils
 
+class DistanceSorter:
+	static func sort_asc(a, b):
+		return a[2] < b[2]
 
 static func get_von_neumann_nb(m, x, y):
 	var nb = []
@@ -65,24 +68,16 @@ static func lerp_point(p1, p2, t):
 	return [lerp(p1[0], p2[0], t), lerp(p1[1], p2[1], t)]
 
 
-static func line(p1, p2):
+static func line(p1, p2, _d=null):
 	var points = []
-	var d = distance(p1, p2)
+	var d = _d
+	if d == null:
+		d = distance(p1, p2)
+
 	var steps = ceil(d)
 
-	for step in range(steps):
+	for step in range(1, steps):
 		var t = step / d
-		var hall_center = lerp_point(p1, p2, t)
-		points.append_array([
-			hall_center,
-			[hall_center[0]-1, hall_center[1]],
-			[hall_center[0]-1, hall_center[1]-1],
-			[hall_center[0]  , hall_center[1]-1],
-			[hall_center[0]+1, hall_center[1]-1],
-			[hall_center[0]+1, hall_center[1]],
-			[hall_center[0]+1, hall_center[1]+1],
-			[hall_center[0]  , hall_center[1]+1],
-			[hall_center[0]-1, hall_center[1]+1],
-		])
+		points.append(lerp_point(p1, p2, t))
 
 	return points

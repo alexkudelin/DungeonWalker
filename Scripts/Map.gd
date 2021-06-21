@@ -42,6 +42,10 @@ onready var WallTileTextureMap = {
 	Constants.WallTileCode.EMPTY: [
 		WALLS.tile_set.find_tile_by_name("caves-rails-wall-empty"),
 	],
+
+	Constants.WallTileCode.NODE_WALL: [
+		WALLS.tile_set.find_tile_by_name("caves-rails-tileset-node-wall"),
+	]
 }
 
 
@@ -69,7 +73,7 @@ func _process(_delta):
 	if Input.is_action_just_pressed("recreate_map"):
 		_clean(W, H)
 
-		var cur_seed = 8676869736480261167
+		var cur_seed = null
 
 		if cur_seed == null:
 			rng.randomize()
