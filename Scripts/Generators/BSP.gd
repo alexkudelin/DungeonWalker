@@ -333,11 +333,6 @@ func generate_halls(node):
 					)
 
 
-func _get_split_direction():
-	var choices = [Constants.Direction.VERTICAL, Constants.Direction.HORIZONTAL]
-	return choices[rng.randi() % choices.size()]
-
-
 func _get_wall(a, b):
 	var borders = [a, b]
 
@@ -373,27 +368,39 @@ func generate_tree(x1, x2, y1, y2, depth=1):
 	var left = null
 	var right = null
 
-	if y2 <= y1 or x2 <= x1 or (y2 - y1 < Constants.MIN_ROOM_SIZE or x2 - x1 < Constants.MIN_ROOM_SIZE):
+	# initial check for room size
+	if y2 <= y1 or x2 <= x1:
+		return {"left": left, "right": right}
+
+	var direction = null
+
+	# if width is much bigger than height or ... 
+	if (x2 - x1) / (y2 - y1) >= 1.25:
+		direction = Constants.Direction.VERTICAL
+
+	# ... height is much bigger than width we force the direction to part
+	if (y2 - y1) / (x2 - x1) >= 1.25:
+		direction = Constants.Direction.HORIZONTAL
+
+	# if the situation is common we randomly choose direction
+	if direction == null:
+		direction = [Constants.Direction.VERTICAL, Constants.Direction.HORIZONTAL][rng.randi() % 2]
+
+	# Then we check that if split both resulted partitions will be good
+	var max_size = null
+
+	if direction == Constants.Direction.VERTICAL:
+		max_size = (x2 - x1)
+	else:
+		max_size = (y2 - y1)
+
+	# Just check that dominating dimension can not suit two parts. If so, exit
+	if max_size - Constants.MIN_ROOM_SIZE < Constants.MIN_ROOM_SIZE:
 		return {"left": left, "right": right}
 
 	var wall_shift = Constants.MIN_ROOM_FREE_SPACE + Constants.WALL_SIZE
-	var direction = _get_split_direction()
 
-	if (x2 - x1) / (y2 - y1) >= 1.25:
-		direction = direction | Constants.Direction.VERTICAL
-
-	if (y2 - y1) / (x2 - x1) >= 1.25:
-		direction = direction | Constants.Direction.HORIZONTAL
-
-	if direction == Constants.Direction.MIXED:
-		direction = _get_split_direction()
-
-	var max_size = (x2 - x1) if direction == Constants.Direction.VERTICAL else (y2 - y1)
-
-	if max_size - Constants.MIN_ROOM_SIZE <= Constants.MIN_ROOM_SIZE:
-		return {"left": left, "right": right}
-
-	if (x2 - x1 > Constants.MIN_ROOM_SIZE) and direction == Constants.Direction.VERTICAL:
+	if direction == Constants.Direction.VERTICAL:
 		var wall = _get_wall(x1 + wall_shift, x2 - wall_shift)
 		var children = generate_tree(x1, wall, y1, y2, depth+1)
 
@@ -412,7 +419,7 @@ func generate_tree(x1, x2, y1, y2, depth=1):
 			wall, y1, x2-wall+1, y2-y1+1,
 			depth
 		)
-	elif (y2 - y1 > Constants.MIN_ROOM_SIZE) and direction == Constants.Direction.HORIZONTAL:
+	elif direction == Constants.Direction.HORIZONTAL:
 		var wall = _get_wall(y1 + wall_shift, y2 - wall_shift)
 		var children = generate_tree(x1, x2, y1, wall, depth+1)
 
