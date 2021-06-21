@@ -18,61 +18,61 @@ func _fill_level(node):
 		_fill_level(node.right)
 
 		# for x in range(node.x1(), node.x2()):
-		# 	FLOOR[node.y1()][x] = FLOOR[node.y2()][x] = Constants.TileCodes.NODE_WALL
+		# 	FLOOR[node.y1()][x] = FLOOR[node.y2()][x] = Constants.FloorTileCode.NODE_WALL
 
 		# for y in range(node.y1(), node.y2()+1):
-		# 	FLOOR[y][node.x1()] = FLOOR[y][node.x2()] = Constants.TileCodes.NODE_WALL
+		# 	FLOOR[y][node.x1()] = FLOOR[y][node.x2()] = Constants.FloorTileCode.NODE_WALL
 
 		if node.room:
 			var r = node.room
 
 			for x in range(r.x1(), r.x2()+1):
-				WALLS[r.y1()][x] = Constants.TileCodes.NORTH_WALL
-				WALLS[r.y2()][x] = Constants.TileCodes.SOUTH_WALL
+				WALLS[r.y1()][x] = Constants.FloorTileCode.NORTH_WALL
+				WALLS[r.y2()][x] = Constants.FloorTileCode.SOUTH_WALL
 
 			for y in range(r.y1(), r.y2()+1):
-				WALLS[y][r.x1()] = Constants.TileCodes.WEST_WALL
-				WALLS[y][r.x2()] = Constants.TileCodes.EAST_WALL
+				WALLS[y][r.x1()] = Constants.FloorTileCode.WEST_WALL
+				WALLS[y][r.x2()] = Constants.FloorTileCode.EAST_WALL
 
-			WALLS[r.y1()][r.x1()] = Constants.TileCodes.NW_CORNER
-			WALLS[r.y1()][r.x2()] = Constants.TileCodes.NE_CORNER
-			WALLS[r.y2()][r.x1()] = Constants.TileCodes.SW_CORNER
-			WALLS[r.y2()][r.x2()] = Constants.TileCodes.SE_CORNER
+			WALLS[r.y1()][r.x1()] = Constants.FloorTileCode.NW_CORNER
+			WALLS[r.y1()][r.x2()] = Constants.FloorTileCode.NE_CORNER
+			WALLS[r.y2()][r.x1()] = Constants.FloorTileCode.SW_CORNER
+			WALLS[r.y2()][r.x2()] = Constants.FloorTileCode.SE_CORNER
 
 			for x in range(r.x1(), r.x2()+1):
 				for y in range(r.y1(), r.y2()+1):
-					FLOOR[y][x] = Constants.TileCodes.ROOM_FLOOR
+					FLOOR[y][x] = Constants.FloorTileCode.ROOM_FLOOR
 
 		if node.hall:
 			var h = node.hall
 
 			for x in range(h.x1(), h.x1() + h.get_width()):
 				for y in range(h.y1(), h.y1() + h.get_height()):
-					FLOOR[y][x] = Constants.TileCodes.ROOM_FLOOR
+					FLOOR[y][x] = Constants.FloorTileCode.ROOM_FLOOR
 					
 			var hall_direction = h.get_direction()
 
 			if hall_direction == Constants.Direction.HORIZONTAL:
 				for x in range(h.x1(), h.x1() + h.get_width()):
-					WALLS[h.y1()][x] = Constants.TileCodes.NORTH_WALL
-					WALLS[h.y2()][x] = Constants.TileCodes.SOUTH_WALL
+					WALLS[h.y1()][x] = Constants.FloorTileCode.NORTH_WALL
+					WALLS[h.y2()][x] = Constants.FloorTileCode.SOUTH_WALL
 
 				for y in range(h.y1(), h.y1() + h.get_height()):
-					WALLS[y][h.x1()-1] = Constants.TileCodes.EMPTY
-					WALLS[y][h.x2()] = Constants.TileCodes.EMPTY
+					WALLS[y][h.x1()-1] = Constants.FloorTileCode.EMPTY
+					WALLS[y][h.x2()] = Constants.FloorTileCode.EMPTY
 
-				WALLS[h.y1()][h.x1()] = Constants.TileCodes.SW_CORNER
-				WALLS[h.y2()][h.x1()] = Constants.TileCodes.NE_CORNER
-				WALLS[h.y1()][h.x2()] = Constants.TileCodes.SE_CORNER
-				WALLS[h.y2()][h.x2()] = Constants.TileCodes.NW_CORNER
+				WALLS[h.y1()][h.x1()] = Constants.FloorTileCode.SW_CORNER
+				WALLS[h.y2()][h.x1()] = Constants.FloorTileCode.NE_CORNER
+				WALLS[h.y1()][h.x2()] = Constants.FloorTileCode.SE_CORNER
+				WALLS[h.y2()][h.x2()] = Constants.FloorTileCode.NW_CORNER
 			elif hall_direction == Constants.Direction.VERTICAL:
 				for y in range(h.y1(), h.y1() + h.get_height()):
-					WALLS[y][h.x1()] = Constants.TileCodes.WEST_WALL
-					WALLS[y][h.x2()] = Constants.TileCodes.EAST_WALL
+					WALLS[y][h.x1()] = Constants.FloorTileCode.WEST_WALL
+					WALLS[y][h.x2()] = Constants.FloorTileCode.EAST_WALL
 
 				for x in range(h.x1(), h.x1() + h.get_width()):
-					WALLS[h.y1()-1][x] = Constants.TileCodes.EMPTY
-					WALLS[h.y2()][x] = Constants.TileCodes.EMPTY
+					WALLS[h.y1()-1][x] = Constants.FloorTileCode.EMPTY
+					WALLS[h.y2()][x] = Constants.FloorTileCode.EMPTY
 
 
 func _init_level(w, h):
@@ -84,8 +84,8 @@ func _init_level(w, h):
 		WALLS.append([])
 
 		for _j in range(h):
-			FLOOR[i].append(Constants.TileCodes.EMPTY)
-			WALLS[i].append(Constants.TileCodes.EMPTY)
+			FLOOR[i].append(Constants.FloorTileCode.EMPTY)
+			WALLS[i].append(Constants.FloorTileCode.EMPTY)
 
 
 func _get_intersection(l1, l2):

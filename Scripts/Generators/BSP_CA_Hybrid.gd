@@ -15,26 +15,24 @@ var rng = null
 var FLOOR = null
 var WALLS = null
 
-var m = {
-	Constants.CA_Tiles.ALIVE: Constants.TileCodes.ROOM_FLOOR,
-	Constants.CA_Tiles.OUTLINE: Constants.TileCodes.HALL_FLOOR,
-	Constants.CA_Tiles.DEAD: Constants.TileCodes.EMPTY,
-}
+func _outline():
+	var w = len(FLOOR[0])
+	var h = len(FLOOR)
 
-func _outline(w, h):
 	var outline = []
 
 	for x in range(w):
 		for y in range(h):
-			if FLOOR[y][x] == Constants.TileCodes.ROOM_FLOOR:
-				var nbhood = Utils.get_moore_nb(FLOOR, x, y)
-				for nb in nbhood:
-					if nb and nb[2] == Constants.TileCodes.EMPTY:
-						outline.append([nb[0], nb[1]])
+			if FLOOR[y][x] == Constants.FloorTileCode.MID_FLOOR:
+				for nb in Utils.get_moore_nb(FLOOR, x, y):
+					if nb and nb[2] == Constants.FloorTileCode.EMPTY:
+						outline.append(nb)
 
 	for item in outline:
-		FLOOR[item[1]][item[0]] = Constants.TileCodes.HALL_FLOOR
-		WALLS[item[1]][item[0]] = Constants.TileCodes.WALL
+		WALLS[item[1]][item[0]] = Constants.WallTileCode.MID_WALL
+		FLOOR[item[1]][item[0]] = Constants.FloorTileCode.MID_FLOOR
+
+
 
 
 func _fill_level(node):
@@ -46,37 +44,45 @@ func _fill_level(node):
 			var r = node.room
 
 			# for x in range(r.x1(), r.x2()+1):
-			# 	WALLS[r.y1()][x] = Constants.TileCodes.NORTH_WALL
-			# 	WALLS[r.y2()][x] = Constants.TileCodes.SOUTH_WALL
+			# 	WALLS[r.y1()][x] = Constants.FloorTileCode.NORTH_WALL
+			# 	WALLS[r.y2()][x] = Constants.FloorTileCode.SOUTH_WALL
 
 			# for y in range(r.y1(), r.y2()+1):
-			# 	WALLS[y][r.x1()] = Constants.TileCodes.WEST_WALL
-			# 	WALLS[y][r.x2()] = Constants.TileCodes.EAST_WALL
+			# 	WALLS[y][r.x1()] = Constants.FloorTileCode.WEST_WALL
+			# 	WALLS[y][r.x2()] = Constants.FloorTileCode.EAST_WALL
 
-			# WALLS[r.y1()][r.x1()] = Constants.TileCodes.NW_CORNER
-			# WALLS[r.y1()][r.x2()] = Constants.TileCodes.NE_CORNER
-			# WALLS[r.y2()][r.x1()] = Constants.TileCodes.SW_CORNER
-			# WALLS[r.y2()][r.x2()] = Constants.TileCodes.SE_CORNER
+			# WALLS[r.y1()][r.x1()] = Constants.FloorTileCode.NW_CORNER
+			# WALLS[r.y1()][r.x2()] = Constants.FloorTileCode.NE_CORNER
+			# WALLS[r.y2()][r.x1()] = Constants.FloorTileCode.SW_CORNER
+			# WALLS[r.y2()][r.x2()] = Constants.FloorTileCode.SE_CORNER
 
 			for i in range(r.get_width()):
 				for j in range(r.get_height()):
-					FLOOR[r.y1()+j][r.x1()+i] = m[r.ca.matrix[j][i]]
+					var x = r.x1() + i
+					var y = r.y1() + j
+					var val = r.ca.matrix[j][i]
 
-		for x in range(node.x1(), node.x2()):
-			FLOOR[node.y1()][x] = Constants.TileCodes.NODE_WALL
-			FLOOR[node.y2()][x] = Constants.TileCodes.NODE_WALL
+					if val == Constants.CA_Tiles.ALIVE:
+						FLOOR[y][x] = Constants.FloorTileCode.MID_FLOOR
+						WALLS[y][x] = Constants.WallTileCode.EMPTY
+					elif val == Constants.CA_Tiles.DEAD:
+						FLOOR[y][x] = Constants.FloorTileCode.EMPTY
+						WALLS[y][x] = Constants.WallTileCode.EMPTY
 
-		for y in range(node.y1(), node.y2()+1):
-			FLOOR[y][node.x1()] = Constants.TileCodes.NODE_WALL
-			FLOOR[y][node.x2()] = Constants.TileCodes.NODE_WALL
+#		for x in range(node.x1(), node.x2()):
+#			FLOOR[node.y1()][x] = Constants.FloorTileCode.NODE_WALL
+#			FLOOR[node.y2()][x] = Constants.FloorTileCode.NODE_WALL
+#
+#		for y in range(node.y1(), node.y2()+1):
+#			FLOOR[y][node.x1()] = Constants.FloorTileCode.NODE_WALL
+#			FLOOR[y][node.x2()] = Constants.FloorTileCode.NODE_WALL
 
 		if node.hall:
 			for p in Utils.line([node.hall[0], node.hall[1]], [node.hall[2], node.hall[3]]):
 				var x = int(p[0])
 				var y = int(p[1])
 
-				if FLOOR[y][x] != Constants.CA_Tiles.ALIVE:
-					FLOOR[y][x] = m[Constants.CA_Tiles.ALIVE]
+				FLOOR[y][x] = Constants.FloorTileCode.MID_FLOOR
 
 
 func _init_level(w, h):
@@ -88,8 +94,8 @@ func _init_level(w, h):
 		WALLS.append([])
 
 		for _j in range(h):
-			FLOOR[i].append(Constants.TileCodes.EMPTY)
-			WALLS[i].append(Constants.TileCodes.EMPTY)
+			FLOOR[i].append(Constants.FloorTileCode.EMPTY)
+			WALLS[i].append(Constants.WallTileCode.EMPTY)
 
 
 func _generate_rooms(root):
@@ -150,15 +156,15 @@ func _generate_halls(node):
 			node.hall = _get_closest_points(node.left.room, node.right.room)
 		elif node.left.hall and node.right.room:
 			var left_rooms = node.left.get_rooms()
-			node.hall = _get_closest_points(left_rooms[randi() % left_rooms.size()], node.right.room)
+			node.hall = _get_closest_points(left_rooms[rng.randi() % left_rooms.size()], node.right.room)
 		elif node.left.room and node.right.hall:
 			var right_rooms = node.right.get_rooms()
-			node.hall = _get_closest_points(node.left.room, right_rooms[randi() % right_rooms.size()])
+			node.hall = _get_closest_points(node.left.room, right_rooms[rng.randi() % right_rooms.size()])
 		elif node.left.hall and node.right.hall:
 			var left_rooms = node.left.get_rooms()
 			var right_rooms = node.right.get_rooms()
 
-			node.hall = _get_closest_points(left_rooms[randi() % left_rooms.size()], right_rooms[randi() % right_rooms.size()])
+			node.hall = _get_closest_points(left_rooms[rng.randi() % left_rooms.size()], right_rooms[rng.randi() % right_rooms.size()])
 
 
 func run(w, h):
@@ -171,7 +177,7 @@ func run(w, h):
 
 	_init_level(w, h)
 	_fill_level(root)
-	_outline(w, h)
+	_outline()
 
 
 func get_map():

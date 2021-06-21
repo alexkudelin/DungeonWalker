@@ -1,8 +1,8 @@
 [gd_scene load_steps=5 format=2]
 
 [ext_resource path="res://Scripts/Map.gd" type="Script" id=1]
-[ext_resource path="res://Resources/16px_floor.tres" type="TileSet" id=2]
-[ext_resource path="res://Resources/16px_walls.tres" type="TileSet" id=3]
+[ext_resource path="res://Resources/16px_cave_floor.tres" type="TileSet" id=2]
+[ext_resource path="res://Resources/16px_cave_walls.tres" type="TileSet" id=3]
 [ext_resource path="res://Scripts/Camera2D.gd" type="Script" id=4]
 
 [node name="Node2D" type="Node2D"]
@@ -18,11 +18,13 @@ format = 1
 [node name="Walls" type="TileMap" parent="."]
 tile_set = ExtResource( 3 )
 cell_size = Vector2( 16, 16 )
+show_collision = true
+centered_textures = true
 format = 1
 
 [node name="Camera2D" type="Camera2D" parent="."]
 position = Vector2( 509.594, 301.124 )
 offset = Vector2( 0, 192 )
 current = true
-zoom = Vector2( 0.5, 0.5 )
+zoom = Vector2( 1.125, 1.125 )
 script = ExtResource( 4 )
