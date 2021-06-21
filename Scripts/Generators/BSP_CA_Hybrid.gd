@@ -33,6 +33,33 @@ func _outline():
 		FLOOR[item[1]][item[0]] = Constants.FloorTileCode.MID_FLOOR
 
 
+func _fill_singles():
+	var w = len(FLOOR[0])
+	var h = len(FLOOR)
+
+	var singles_walls = []
+	var singles_floors = []
+
+	while true:
+		for x in range(w):
+			for y in range(h):
+				if FLOOR[y][x] == Constants.FloorTileCode.EMPTY:
+					var nbhood = Utils.get_moore_nb(WALLS, x, y)
+
+					if Utils.count_objects_in_nb(nbhood, [Constants.WallTileCode.MID_WALL]) >= 7:
+						singles_walls.append([x, y, Constants.WallTileCode.MID_WALL])
+						singles_floors.append([x, y, Constants.FloorTileCode.MID_FLOOR])
+
+		if not (singles_walls and singles_floors):
+			break
+		else:
+			while singles_walls or singles_floors:
+				if singles_walls:
+					var item = singles_walls.pop_front()
+					WALLS[item[1]][item[0]] = item[2]
+				if singles_floors:
+					var item = singles_floors.pop_front()
+					FLOOR[item[1]][item[0]] = item[2]
 
 
 func _fill_level(node):
@@ -213,6 +240,7 @@ func run(w, h):
 	_init_level(w, h)
 	_fill_level(root)
 	_outline()
+	_fill_singles()
 
 
 func get_map():
