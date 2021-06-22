@@ -188,6 +188,19 @@ func get_rooms():
 
 	return rooms
 
+func get_left_leaf():
+	if left:
+		return left.get_left_leaf()
+	else:
+		return self
+
+
+func get_right_leaf():
+	if right:
+		return right.get_right_leaf()
+	else:
+		return self
+
 func _to_string():
 	var s = ""
 	for _i in range(depth):

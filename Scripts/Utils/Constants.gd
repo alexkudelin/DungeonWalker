@@ -1,7 +1,7 @@
 class_name Constants
 
 const WALL_SIZE = 1
-const MIN_ROOM_FREE_SPACE = 10
+const MIN_ROOM_FREE_SPACE = 8
 const MIN_ROOM_SIZE = WALL_SIZE*2 + MIN_ROOM_FREE_SPACE
 const HALL_THINNESS = 3
 
@@ -45,6 +45,17 @@ enum WallTileCode {
 	LEFT_WALL,
 
 	NODE_WALL,
+}
+
+enum StuffTileCode {
+	EMPTY = -1,
+
+	CHEST = 0,
+	BIG_FLASK,
+	SMALL_FLASK,
+
+	LEVEL_ENTER,
+	LEVEL_EXIT,
 }
 
 enum CA_Tiles {

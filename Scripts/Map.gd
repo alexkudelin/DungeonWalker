@@ -7,6 +7,7 @@ var Constants = load("res://Scripts/Utils/Constants.gd")
 var CellularAutomaton = load("res://Scripts/CA/CellularAutomaton.gd")
 
 var BSP_Generator = load("res://Scripts/Generators/BSP.gd")
+var CA_Generator = load("res://Scripts/Generators/CA.gd")
 var BSP_CA_Generator = load("res://Scripts/Generators/BSP_CA_Hybrid.gd")
 
 var rng = RandomNumberGenerator.new()
@@ -16,6 +17,7 @@ const H = 64
 
 onready var FLOOR = $Floor
 onready var WALLS = $Walls
+onready var STUFF = $Stuff
 
 onready var FloorTileTextureMap = {
 	Constants.FloorTileCode.MID_FLOOR: [
@@ -44,7 +46,39 @@ onready var WallTileTextureMap = {
 	],
 
 	Constants.WallTileCode.NODE_WALL: [
-		WALLS.tile_set.find_tile_by_name("caves-rails-tileset-node-wall"),
+		WALLS.tile_set.find_tile_by_name("node-wall"),
+	]
+}
+
+onready var StuffTileTextureMap = {
+	Constants.StuffTileCode.CHEST: [
+		STUFF.tile_set.find_tile_by_name("chest-empty"),
+	],
+
+	Constants.StuffTileCode.BIG_FLASK: [
+		STUFF.tile_set.find_tile_by_name("flask-big-blue"),
+		STUFF.tile_set.find_tile_by_name("flask-big-green"),
+		STUFF.tile_set.find_tile_by_name("flask-big-red"),
+		STUFF.tile_set.find_tile_by_name("flask-big-yellow"),
+	],
+
+	Constants.StuffTileCode.SMALL_FLASK: [
+		STUFF.tile_set.find_tile_by_name("flask-blue"),
+		STUFF.tile_set.find_tile_by_name("flask-green"),
+		STUFF.tile_set.find_tile_by_name("flask-red"),
+		STUFF.tile_set.find_tile_by_name("flask-yellow"),
+	],
+
+	Constants.StuffTileCode.EMPTY: [
+		STUFF.tile_set.find_tile_by_name("stuff-empty"),
+	],
+
+	Constants.StuffTileCode.LEVEL_ENTER: [
+		STUFF.tile_set.find_tile_by_name("level-enter"),
+	],
+
+	Constants.StuffTileCode.LEVEL_EXIT: [
+		STUFF.tile_set.find_tile_by_name("level-exit"),
 	]
 }
 
@@ -52,6 +86,7 @@ onready var WallTileTextureMap = {
 func _draw_dungeon(map):
 	var level_floor = map["floor"]
 	var level_walls = map["walls"]
+	var level_stuff = map["stuff"]
 
 	var w = len(level_floor[0])
 	var h = len(level_floor)
@@ -60,6 +95,7 @@ func _draw_dungeon(map):
 		for y in range(h):
 			FLOOR.set_cell(x, y, FloorTileTextureMap[level_floor[y][x]][0])
 			WALLS.set_cell(x, y, WallTileTextureMap[level_walls[y][x]][0])
+			STUFF.set_cell(x, y, StuffTileTextureMap[level_stuff[y][x]][0])
 
 
 func _clean(w, h):
@@ -82,10 +118,10 @@ func _process(_delta):
 
 		print_debug(rng.get_seed())
 
-		var bsp = BSP_CA_Generator.new(rng)
-		bsp.run(W, H)
+		var gen = BSP_CA_Generator.new(rng)
+		gen.run(W, H)
 
-		var map = bsp.get_map()
+		var map = gen.get_map()
 		_draw_dungeon(map)
 
 

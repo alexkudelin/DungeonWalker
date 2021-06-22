@@ -30,6 +30,11 @@ _global_script_classes=[ {
 "path": "res://Scripts/CA/Room.gd"
 }, {
 "base": "Node",
+"class": "CA_Generator",
+"language": "GDScript",
+"path": "res://Scripts/Generators/CA.gd"
+}, {
+"base": "Node",
 "class": "CellularAutomaton",
 "language": "GDScript",
 "path": "res://Scripts/CA/CellularAutomaton.gd"
@@ -59,6 +64,7 @@ _global_script_class_icons={
 "BSP_CA_Generator": "",
 "BSP_Generator": "",
 "CARoom": "",
+"CA_Generator": "",
 "CellularAutomaton": "",
 "Constants": "",
 "Hall": "",
@@ -72,10 +78,18 @@ config/name="DungeonWalker"
 run/main_scene="res://Map.tscn"
 config/icon="res://icon.png"
 
+[debug]
+
+settings/stdout/verbose_stdout=true
+
 [display]
 
 window/size/width=960
 window/size/height=960
+
+[global]
+
+max_remote_stdout_chars_per_second=1000000000
 
 [input]
 

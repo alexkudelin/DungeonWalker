@@ -12,8 +12,9 @@ var BSP_Generator = load("res://Scripts/Generators/BSP.gd")
 
 var rng = null
 
-var FLOOR = null
-var WALLS = null
+var FLOOR = []
+var WALLS = []
+var STUFF = []
 
 func _outline():
 	var w = len(FLOOR[0])
@@ -30,7 +31,6 @@ func _outline():
 
 	for item in outline:
 		WALLS[item[1]][item[0]] = Constants.WallTileCode.MID_WALL
-		FLOOR[item[1]][item[0]] = Constants.FloorTileCode.MID_FLOOR
 
 
 func _fill_singles():
@@ -77,9 +77,6 @@ func _fill_level(node):
 				p1 = p2
 				p2 = temp_p1
 
-			var i = 0
-			var wide = (rng.randi() % 2 == 0)
-
 			for p in Utils.line(p1, p2, d):
 				var x = ceil(p[0])
 				var y = ceil(p[1])
@@ -87,54 +84,31 @@ func _fill_level(node):
 				if FLOOR[y][x] != Constants.FloorTileCode.MID_FLOOR:
 					FLOOR[y][x] = Constants.FloorTileCode.MID_FLOOR
 
-				var extra_points = []
-
-				if wide:
-					extra_points = [
-						[x-1, y],
-						[x-1, y-1],
-						[x  , y-1],
-						[x+1, y-1],
-						[x+1, y],
-						[x+1, y+1],
-						[x  , y+1],
-						[x-1, y+1],
-					]
-				else:
-					if i % 2 == 0:
-						extra_points = [
-							[x+1, y],
-							[x+1, y+1],
-							[x  , y+1],
-						]
-					else:
-						extra_points = [
-							[x  , y+1],
-							[x-1, y+1],
-							[x-1, y]
-						]
-
-					i += 1
+				var extra_points = [
+					[x-1, y],
+					[x-1, y-1],
+					[x  , y-1],
+					[x+1, y-1],
+					[x+1, y],
+					[x+1, y+1],
+					[x  , y+1],
+					[x-1, y+1],
+				]
 
 				for ep in extra_points:
 					if FLOOR[ep[1]][ep[0]] != Constants.FloorTileCode.MID_FLOOR:
 						FLOOR[ep[1]][ep[0]] = Constants.FloorTileCode.MID_FLOOR
 
+		# for x in range(node.x1(), node.x2()):
+		# 	WALLS[node.y1()][x] = Constants.WallTileCode.NODE_WALL
+		# 	WALLS[node.y2()][x] = Constants.WallTileCode.NODE_WALL
+
+		# for y in range(node.y1(), node.y2()+1):
+		# 	WALLS[y][node.x1()] = Constants.WallTileCode.NODE_WALL
+		# 	WALLS[y][node.x2()] = Constants.WallTileCode.NODE_WALL
+
 		if node.room:
 			var r = node.room
-
-			# for x in range(r.x1(), r.x2()+1):
-			# 	WALLS[r.y1()][x] = Constants.FloorTileCode.NORTH_WALL
-			# 	WALLS[r.y2()][x] = Constants.FloorTileCode.SOUTH_WALL
-
-			# for y in range(r.y1(), r.y2()+1):
-			# 	WALLS[y][r.x1()] = Constants.FloorTileCode.WEST_WALL
-			# 	WALLS[y][r.x2()] = Constants.FloorTileCode.EAST_WALL
-
-			# WALLS[r.y1()][r.x1()] = Constants.FloorTileCode.NW_CORNER
-			# WALLS[r.y1()][r.x2()] = Constants.FloorTileCode.NE_CORNER
-			# WALLS[r.y2()][r.x1()] = Constants.FloorTileCode.SW_CORNER
-			# WALLS[r.y2()][r.x2()] = Constants.FloorTileCode.SE_CORNER
 
 			for i in range(r.get_width()):
 				for j in range(r.get_height()):
@@ -149,18 +123,99 @@ func _fill_level(node):
 						FLOOR[y][x] = Constants.FloorTileCode.EMPTY
 						WALLS[y][x] = Constants.WallTileCode.EMPTY
 
+func _add_stuff(w, h):
+	var ignore = []
+
+	for x in range(w):
+		for y in range(h):
+			if not ignore.has([x, y]):
+				if FLOOR[y][x] == Constants.FloorTileCode.MID_FLOOR and WALLS[y][x] == Constants.WallTileCode.EMPTY:
+					var nb = Utils.get_moore_nb(WALLS, x, y)
+					if Utils.count_objects_in_nb(nb, [Constants.WallTileCode.MID_WALL]) >= 6:
+						var p = rng.randf()
+
+						if p > 0 and p <= 0.25:
+							STUFF[y][x] = Constants.StuffTileCode.CHEST
+						elif p > 0.25 and p <= 0.35:
+							STUFF[y][x] = Constants.StuffTileCode.BIG_FLASK
+						elif p > 0.35 and p <= 0.45:
+							STUFF[y][x] = Constants.StuffTileCode.SMALL_FLASK
+						else:
+							continue
+
+						for item in nb:
+							ignore.append([item[0], item[1]])
+					else:
+						if rng.randf() <= 0.0075:
+							STUFF[y][x] = Constants.StuffTileCode.CHEST
+							for item in nb:
+								ignore.append([item[0], item[1]])
+							continue
+
+						if rng.randf() <= 0.01:
+							STUFF[y][x] = Constants.StuffTileCode.BIG_FLASK
+							for item in nb:
+								ignore.append([item[0], item[1]])
+							continue
+
+						if rng.randf() <= 0.01:
+							STUFF[y][x] = Constants.StuffTileCode.SMALL_FLASK
+							for item in nb:
+								ignore.append([item[0], item[1]])
+							continue
+
+
+func _add_enter_and_exit(root):
+	var enter = root.get_left_leaf()
+	var exit = root.get_right_leaf()
+
+	var enter_room_bbox = enter.room.get_boundary_box()
+	var exit_room_bbox = exit.room.get_boundary_box()
+
+	var enter_point = []
+	var exit_point = []
+
+	var ignore = []
+
+	while not enter_point or not exit_point:
+		if not enter_point:
+			var enter_x = rng.randi_range(enter_room_bbox[0], enter_room_bbox[2])
+			var enter_y = rng.randi_range(enter_room_bbox[1], enter_room_bbox[3])
+
+			if not ignore.has([enter_x, enter_y]):
+				if FLOOR[enter.room.y1()+enter_y][enter.room.x1()+enter_x] != Constants.FloorTileCode.EMPTY:
+					enter_point = [enter_x, enter_y]
+				else:
+					ignore.append([enter_x, enter_y])
+
+		if not exit_point:
+			var exit_x = rng.randi_range(exit_room_bbox[0], exit_room_bbox[2])
+			var exit_y = rng.randi_range(exit_room_bbox[1], exit_room_bbox[3])
+
+			if not ignore.has([exit_x, exit_y]):
+				if FLOOR[exit.room.y1()+exit_y][exit.room.x1()+exit_x] != Constants.FloorTileCode.EMPTY:
+					exit_point = [exit_x, exit_y]
+				else:
+					ignore.append([exit_x, exit_y])
+
+	STUFF[enter.room.y1()+enter_point[1]][enter.room.x1()+enter_point[0]] = Constants.StuffTileCode.LEVEL_ENTER
+	STUFF[exit.room.y1()+exit_point[1]][exit.room.x1()+exit_point[0]] = Constants.StuffTileCode.LEVEL_EXIT
+
 
 func _init_level(w, h):
-	FLOOR = []
-	WALLS = []
+	FLOOR.clear()
+	WALLS.clear()
+	STUFF.clear()
 
 	for i in range(w):
 		FLOOR.append([])
 		WALLS.append([])
+		STUFF.append([])
 
 		for _j in range(h):
 			FLOOR[i].append(Constants.FloorTileCode.EMPTY)
 			WALLS[i].append(Constants.WallTileCode.EMPTY)
+			STUFF[i].append(Constants.StuffTileCode.EMPTY)
 
 
 func _generate_rooms(root):
@@ -178,12 +233,6 @@ func _get_hall_path(room1, room2):
 
 	var room1_center_point = [room1.x1() + ceil((room1_bbox[2] + room1_bbox[0])/2), room1.y1() + ceil((room1_bbox[3] + room1_bbox[1])/2)]
 	var room2_center_point = [room2.x1() + ceil((room2_bbox[2] + room2_bbox[0])/2), room2.y1() + ceil((room2_bbox[3] + room2_bbox[1])/2)]
-
-	room1_center_point[0] += rng.randi_range(-3, 3)
-	room1_center_point[1] += rng.randi_range(-3, 3)
-
-	room2_center_point[0] += rng.randi_range(-3, 3)
-	room2_center_point[1] += rng.randi_range(-3, 3)
 
 	return [
 		room1_center_point,
@@ -241,12 +290,15 @@ func run(w, h):
 	_fill_level(root)
 	_outline()
 	_fill_singles()
+	_add_stuff(w, h)
+	_add_enter_and_exit(root)
 
 
 func get_map():
 	return {
 		"floor": FLOOR,
-		"walls": WALLS
+		"walls": WALLS,
+		"stuff": STUFF,
 	}
 
 
