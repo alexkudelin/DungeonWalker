@@ -131,7 +131,8 @@ func _add_stuff(w, h):
 			if not ignore.has([x, y]):
 				if FLOOR[y][x] == Constants.FloorTileCode.MID_FLOOR and WALLS[y][x] == Constants.WallTileCode.EMPTY:
 					var nb = Utils.get_moore_nb(WALLS, x, y)
-					if Utils.count_objects_in_nb(nb, [Constants.WallTileCode.MID_WALL]) >= 6:
+					var nc = Utils.count_objects_in_nb(nb, [Constants.WallTileCode.MID_WALL])
+					if nc in [5, 6]:
 						var p = rng.randf()
 
 						if p > 0 and p <= 0.25:
