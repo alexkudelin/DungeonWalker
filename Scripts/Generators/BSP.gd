@@ -18,61 +18,57 @@ func _fill_level(node):
 		_fill_level(node.right)
 
 		# for x in range(node.x1(), node.x2()):
-		# 	FLOOR[node.y1()][x] = FLOOR[node.y2()][x] = Constants.FloorTileCode.NODE_WALL
+		# 	WALLS[node.y1()][x] = Constants.WallTileCode.NODE_WALL
+		# 	WALLS[node.y2()][x] = Constants.WallTileCode.NODE_WALL
 
 		# for y in range(node.y1(), node.y2()+1):
-		# 	FLOOR[y][node.x1()] = FLOOR[y][node.x2()] = Constants.FloorTileCode.NODE_WALL
+		# 	WALLS[y][node.x1()] = Constants.WallTileCode.NODE_WALL
+		# 	WALLS[y][node.x2()] = Constants.WallTileCode.NODE_WALL
 
 		if node.room:
 			var r = node.room
 
 			for x in range(r.x1(), r.x2()+1):
-				WALLS[r.y1()][x] = Constants.FloorTileCode.NORTH_WALL
-				WALLS[r.y2()][x] = Constants.FloorTileCode.SOUTH_WALL
-
-			for y in range(r.y1(), r.y2()+1):
-				WALLS[y][r.x1()] = Constants.FloorTileCode.WEST_WALL
-				WALLS[y][r.x2()] = Constants.FloorTileCode.EAST_WALL
-
-			WALLS[r.y1()][r.x1()] = Constants.FloorTileCode.NW_CORNER
-			WALLS[r.y1()][r.x2()] = Constants.FloorTileCode.NE_CORNER
-			WALLS[r.y2()][r.x1()] = Constants.FloorTileCode.SW_CORNER
-			WALLS[r.y2()][r.x2()] = Constants.FloorTileCode.SE_CORNER
+				for y in range(r.y1(), r.y2()+1):
+					FLOOR[y][x] = Constants.FloorTileCode.MID_FLOOR
+					WALLS[y][x] = Constants.WallTileCode.EMPTY
 
 			for x in range(r.x1(), r.x2()+1):
-				for y in range(r.y1(), r.y2()+1):
-					FLOOR[y][x] = Constants.FloorTileCode.ROOM_FLOOR
+				WALLS[r.y1()][x] = Constants.WallTileCode.MID_WALL
+				WALLS[r.y2()][x] = Constants.WallTileCode.MID_WALL
+
+			for y in range(r.y1(), r.y2()+1):
+				WALLS[y][r.x1()] = Constants.WallTileCode.MID_WALL
+				WALLS[y][r.x2()] = Constants.WallTileCode.MID_WALL
+
+			WALLS[r.y1()][r.x1()] = Constants.WallTileCode.MID_WALL
+			WALLS[r.y1()][r.x2()] = Constants.WallTileCode.MID_WALL
+			WALLS[r.y2()][r.x1()] = Constants.WallTileCode.MID_WALL
+			WALLS[r.y2()][r.x2()] = Constants.WallTileCode.MID_WALL
 
 		if node.hall:
 			var h = node.hall
 
 			for x in range(h.x1(), h.x1() + h.get_width()):
 				for y in range(h.y1(), h.y1() + h.get_height()):
-					FLOOR[y][x] = Constants.FloorTileCode.ROOM_FLOOR
-					
+					FLOOR[y][x] = Constants.FloorTileCode.MID_FLOOR
+
 			var hall_direction = h.get_direction()
 
 			if hall_direction == Constants.Direction.HORIZONTAL:
-				for x in range(h.x1(), h.x1() + h.get_width()):
-					WALLS[h.y1()][x] = Constants.FloorTileCode.NORTH_WALL
-					WALLS[h.y2()][x] = Constants.FloorTileCode.SOUTH_WALL
+				for x in range(h.x1()-1, h.x1() + h.get_width()):
+					WALLS[h.y1()][x] = Constants.WallTileCode.MID_WALL
+					WALLS[h.y2()][x] = Constants.WallTileCode.MID_WALL
 
-				for y in range(h.y1(), h.y1() + h.get_height()):
-					WALLS[y][h.x1()-1] = Constants.FloorTileCode.EMPTY
-					WALLS[y][h.x2()] = Constants.FloorTileCode.EMPTY
-
-				WALLS[h.y1()][h.x1()] = Constants.FloorTileCode.SW_CORNER
-				WALLS[h.y2()][h.x1()] = Constants.FloorTileCode.NE_CORNER
-				WALLS[h.y1()][h.x2()] = Constants.FloorTileCode.SE_CORNER
-				WALLS[h.y2()][h.x2()] = Constants.FloorTileCode.NW_CORNER
+				for x in range(h.x1()-1, h.x2()+1):
+					WALLS[h.y][x] = Constants.WallTileCode.EMPTY
 			elif hall_direction == Constants.Direction.VERTICAL:
-				for y in range(h.y1(), h.y1() + h.get_height()):
-					WALLS[y][h.x1()] = Constants.FloorTileCode.WEST_WALL
-					WALLS[y][h.x2()] = Constants.FloorTileCode.EAST_WALL
+				for y in range(h.y1()-1, h.y1() + h.get_height()):
+					WALLS[y][h.x1()] = Constants.WallTileCode.MID_WALL
+					WALLS[y][h.x2()] = Constants.WallTileCode.MID_WALL
 
-				for x in range(h.x1(), h.x1() + h.get_width()):
-					WALLS[h.y1()-1][x] = Constants.FloorTileCode.EMPTY
-					WALLS[h.y2()][x] = Constants.FloorTileCode.EMPTY
+				for y in range(h.y1()-1, h.y2() + 1):
+					WALLS[y][h.x] = Constants.WallTileCode.EMPTY
 
 
 func _init_level(w, h):
