@@ -1,0 +1,39 @@
+[gd_scene load_steps=7 format=2]
+
+[ext_resource path="res://Resources/16px_cave_stuff.tres" type="TileSet" id=1]
+[ext_resource path="res://Resources/16px_cave_walls.tres" type="TileSet" id=2]
+[ext_resource path="res://Scripts/Map.gd" type="Script" id=3]
+[ext_resource path="res://Resources/16px_cave_floor.tres" type="TileSet" id=4]
+[ext_resource path="res://Scripts/Camera2D.gd" type="Script" id=5]
+[ext_resource path="res://Scenes/Player.tscn" type="PackedScene" id=6]
+
+[node name="Node2D" type="Node2D"]
+script = ExtResource( 3 )
+
+[node name="Floor" type="TileMap" parent="."]
+tile_set = ExtResource( 4 )
+cell_size = Vector2( 16, 16 )
+show_collision = true
+centered_textures = true
+format = 1
+
+[node name="Walls" type="TileMap" parent="."]
+tile_set = ExtResource( 2 )
+cell_size = Vector2( 16, 16 )
+show_collision = true
+centered_textures = true
+format = 1
+
+[node name="Stuff" type="TileMap" parent="."]
+tile_set = ExtResource( 1 )
+cell_size = Vector2( 16, 16 )
+show_collision = true
+centered_textures = true
+format = 1
+
+[node name="Player" parent="." instance=ExtResource( 6 )]
+
+[node name="Camera2D" type="Camera2D" parent="Player"]
+current = true
+zoom = Vector2( 0.375, 0.375 )
+script = ExtResource( 5 )

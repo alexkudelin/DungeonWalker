@@ -18,6 +18,7 @@ const H = 64
 onready var FLOOR = $Floor
 onready var WALLS = $Walls
 onready var STUFF = $Stuff
+onready var PLAYER = $Player
 
 onready var FloorTileTextureMap = {
 	Constants.FloorTileCode.MID_FLOOR: [
@@ -109,7 +110,7 @@ func _process(_delta):
 	if Input.is_action_just_pressed("recreate_map"):
 		_clean(W, H)
 
-		var cur_seed = null
+		var cur_seed = 1818724167630780775
 
 		if cur_seed == null:
 			rng.randomize()
@@ -119,10 +120,11 @@ func _process(_delta):
 		print_debug(rng.get_seed())
 
 		var gen = BSP_CA_Generator.new(rng)
-		gen.run(W, H)
+		var map = gen.run(W, H)
 
-		var map = gen.get_map()
 		_draw_dungeon(map)
+
+		PLAYER.position = FLOOR.map_to_world(Vector2(map.start[0], map.start[1]))
 
 
 func _ready():

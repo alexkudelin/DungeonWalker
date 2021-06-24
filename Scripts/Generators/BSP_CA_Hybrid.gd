@@ -199,8 +199,16 @@ func _add_enter_and_exit(root):
 				else:
 					ignore.append([exit_x, exit_y])
 
-	STUFF[enter.room.y1()+enter_point[1]][enter.room.x1()+enter_point[0]] = Constants.StuffTileCode.LEVEL_ENTER
-	STUFF[exit.room.y1()+exit_point[1]][exit.room.x1()+exit_point[0]] = Constants.StuffTileCode.LEVEL_EXIT
+	enter_point[0] += enter.room.x1()
+	enter_point[1] += enter.room.y1()
+
+	exit_point[0] += exit.room.x1()
+	exit_point[1] += exit.room.y1()
+
+	STUFF[enter_point[1]][enter_point[0]] = Constants.StuffTileCode.LEVEL_ENTER
+	STUFF[exit_point[1]][exit_point[0]] = Constants.StuffTileCode.LEVEL_EXIT
+
+	return [enter_point, exit_point]
 
 
 func _init_level(w, h):
@@ -279,9 +287,9 @@ func _generate_halls(node):
 			node.hall = paths[0]
 
 
-func run(w, h):
+func run(w, h, max_depth=null):
 	var bsp_gen = BSP_Generator.new(rng)
-	var children = bsp_gen.generate_tree(0, w-1, 0, h-1)
+	var children = bsp_gen.generate_tree(0, w-1, 0, h-1, 1, max_depth)
 	var root = BSPNode.new(children["left"], children["right"], 0, 0, w, h)
 
 	_generate_rooms(root)
@@ -292,14 +300,15 @@ func run(w, h):
 	_outline()
 	_fill_singles()
 	_add_stuff(w, h)
-	_add_enter_and_exit(root)
 
+	var start_and_end = _add_enter_and_exit(root)
 
-func get_map():
 	return {
 		"floor": FLOOR,
 		"walls": WALLS,
 		"stuff": STUFF,
+		"start": start_and_end[0],
+		"end": start_and_end[1]
 	}
 
 

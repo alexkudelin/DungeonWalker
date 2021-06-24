@@ -360,12 +360,15 @@ func generate_rooms(node):
 			node.room = Room.new(x1+dx1, y1+dy1, (x2-dx2) - (x1+dx1), (y2-dy2) - (y1+dy1))
 
 
-func generate_tree(x1, x2, y1, y2, depth=1):
+func generate_tree(x1, x2, y1, y2, depth=1, max_depth=null):
 	var left = null
 	var right = null
 
 	# initial check for room size
 	if y2 <= y1 or x2 <= x1:
+		return {"left": left, "right": right}
+
+	if max_depth and depth > max_depth:
 		return {"left": left, "right": right}
 
 	var direction = null
@@ -398,7 +401,7 @@ func generate_tree(x1, x2, y1, y2, depth=1):
 
 	if direction == Constants.Direction.VERTICAL:
 		var wall = _get_wall(x1 + wall_shift, x2 - wall_shift)
-		var children = generate_tree(x1, wall, y1, y2, depth+1)
+		var children = generate_tree(x1, wall, y1, y2, depth+1, max_depth)
 
 		left = BSPNode.new(
 			children["left"],
@@ -407,7 +410,7 @@ func generate_tree(x1, x2, y1, y2, depth=1):
 			depth
 		)
 
-		children = generate_tree(wall, x2, y1, y2, depth+1)
+		children = generate_tree(wall, x2, y1, y2, depth+1, max_depth)
 
 		right = BSPNode.new(
 			children["left"],
@@ -417,7 +420,7 @@ func generate_tree(x1, x2, y1, y2, depth=1):
 		)
 	elif direction == Constants.Direction.HORIZONTAL:
 		var wall = _get_wall(y1 + wall_shift, y2 - wall_shift)
-		var children = generate_tree(x1, x2, y1, wall, depth+1)
+		var children = generate_tree(x1, x2, y1, wall, depth+1, max_depth)
 
 		left = BSPNode.new(
 			children["left"],
@@ -426,7 +429,7 @@ func generate_tree(x1, x2, y1, y2, depth=1):
 			depth
 		)
 
-		children = generate_tree(x1, x2, wall, y2, depth+1)
+		children = generate_tree(x1, x2, wall, y2, depth+1, max_depth)
 
 		right = BSPNode.new(
 			children["left"],
