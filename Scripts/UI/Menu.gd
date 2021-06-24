@@ -1,7 +1,5 @@
 extends MarginContainer
 
-onready var game_scene = load("res://Scenes/GameLevel.tscn")
-
 onready var start_item = $CenterContainer/VBoxContainer/Buttons/ButtonsVBox/StartButton/StartButtonLabels/StartButtonMarker
 onready var exit_item = $CenterContainer/VBoxContainer/Buttons/ButtonsVBox/ExitButton/ExitButtonLabels/ExitButtonMarker
 
@@ -30,7 +28,7 @@ func _process(delta):
 func _handle_selection():
 	if current_item == 0:
 		print("Start game")
-		get_tree().change_scene("res://Scenes/GameLevel.tscn")
+		get_tree().change_scene("res://Scenes/World.tscn")
 	elif current_item == 1:
 		get_tree().quit(0)
 
