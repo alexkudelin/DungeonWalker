@@ -13,21 +13,18 @@ script = ExtResource( 3 )
 [node name="Floor" type="TileMap" parent="."]
 tile_set = ExtResource( 4 )
 cell_size = Vector2( 16, 16 )
-show_collision = true
 centered_textures = true
 format = 1
 
 [node name="Walls" type="TileMap" parent="."]
 tile_set = ExtResource( 2 )
 cell_size = Vector2( 16, 16 )
-show_collision = true
 centered_textures = true
 format = 1
 
 [node name="Stuff" type="TileMap" parent="."]
 tile_set = ExtResource( 1 )
 cell_size = Vector2( 16, 16 )
-show_collision = true
 centered_textures = true
 format = 1
 
