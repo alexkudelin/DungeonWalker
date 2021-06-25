@@ -102,7 +102,9 @@ func _handle_accept():
 		print("seed")
 	elif first_level_item == 1:
 		if menu_level == 0:
-			print("algo")
+			if first_level_item == 1:
+				menu_level += 1
+				set_current_selection(menu_level, first_level_item, second_level_item, selected_algo)
 		elif menu_level == 1:
 			selected_algo = second_level_item
 			set_current_selection(menu_level, first_level_item, second_level_item, selected_algo)

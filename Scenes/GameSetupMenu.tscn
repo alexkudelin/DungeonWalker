@@ -106,9 +106,9 @@ margin_bottom = 70.0
 rect_min_size = Vector2( 500, 0 )
 size_flags_horizontal = 3
 custom_fonts/font = SubResource( 1 )
-text = "mycoolseed"
 align = 1
 context_menu_enabled = false
+placeholder_text = "put you seed here"
 caret_blink = true
 caret_blink_speed = 0.5
 
