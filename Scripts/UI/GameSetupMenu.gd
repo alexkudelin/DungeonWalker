@@ -109,7 +109,6 @@ func _handle_accept():
 		elif menu_level == 1:
 			seed_input.release_focus()
 			seed_marker.grab_focus()
-			seed_input
 		set_current_selection(menu_level, first_level_item, second_level_item, selected_algo)
 	elif first_level_item == 1:
 		if menu_level == 0:
@@ -121,13 +120,13 @@ func _handle_accept():
 			set_current_selection(menu_level, first_level_item, second_level_item, selected_algo)
 	elif first_level_item == 2:
 		Global.selected_algorithm = selected_algo
-		print_debug(Global._seed)
 		get_tree().change_scene("res://Scenes/World.tscn")
 	elif first_level_item == 3:
 		get_tree().change_scene("res://Scenes/MainMenu.tscn")
 
 
 func _ready():
+	Global._seed = null
 	set_current_selection(0, 0, 2, 2)
 
 

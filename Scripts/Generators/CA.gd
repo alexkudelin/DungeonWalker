@@ -28,7 +28,6 @@ func _outline():
 
 	for item in outline:
 		WALLS[item[1]][item[0]] = Constants.WallTileCode.MID_WALL
-		FLOOR[item[1]][item[0]] = Constants.FloorTileCode.MID_FLOOR
 
 
 func _fill_singles():
