@@ -105,7 +105,7 @@ func _clean(w, h):
 			FLOOR.set_cell(i, j, FloorTileTextureMap[Constants.FloorTileCode.EMPTY][0])
 			WALLS.set_cell(i, j, WallTileTextureMap[Constants.WallTileCode.EMPTY][0])
 
-func _recreate_map():
+func _create_map():
 	_clean(W, H)
 
 	var cur_seed = null # 1818724167630780775
@@ -117,17 +117,24 @@ func _recreate_map():
 
 	print_debug(rng.get_seed())
 
-	var gen = BSP_CA_Generator.new(rng)
+	var gen = null
+
+	if Global.selected_algorithm == 0:
+		gen = BSP_Generator.new(rng)
+	elif Global.selected_algorithm == 1:
+		gen = CA_Generator.new(rng)
+	elif Global.selected_algorithm == 2:
+		gen = BSP_CA_Generator.new(rng)
+
 	var map = gen.run(W, H)
 
 	_draw_dungeon(map)
 
 	PLAYER.position = FLOOR.map_to_world(Vector2(map.start[0], map.start[1]))
 
-func _process(_delta):	
-	if Input.is_action_just_pressed("recreate_map"):
-		_recreate_map()
-
+#func _process(_delta):	
+#	if Input.is_action_just_pressed("recreate_map"):
+#		_recreate_map()
 
 func _ready():
-	_recreate_map()
+	_create_map()

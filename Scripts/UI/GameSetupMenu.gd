@@ -109,7 +109,9 @@ func _handle_accept():
 			selected_algo = second_level_item
 			set_current_selection(menu_level, first_level_item, second_level_item, selected_algo)
 	elif first_level_item == 2:
-		print("algo: ", selected_algo)
+		# Global._seed = seed_input
+		Global.selected_algorithm = selected_algo
+		get_tree().change_scene("res://Scenes/World.tscn")
 	elif first_level_item == 3:
 		get_tree().change_scene("res://Scenes/MainMenu.tscn")
 

@@ -78,6 +78,10 @@ config/name="DungeonWalker"
 run/main_scene="res://Scenes/World.tscn"
 config/icon="res://icon.png"
 
+[autoload]
+
+Global="*res://Scripts/Global.gd"
+
 [debug]
 
 settings/stdout/verbose_stdout=true
