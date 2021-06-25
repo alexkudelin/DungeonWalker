@@ -9,7 +9,7 @@ var current_item = 0
 
 func _ready():
 	set_visibility(false)
-	set_current_selection(current_item)
+	set_current_selection(0)
 
 
 func _toggle_pause():

@@ -133,7 +133,7 @@ func _create_map():
 	PLAYER.position = FLOOR.map_to_world(Vector2(map.start[0], map.start[1]))
 
 
-func _process(_delta):	
+func _process(_delta):
 	if Input.is_action_just_pressed("recreate_map"):
 		Global._seed = null
 		_create_map()

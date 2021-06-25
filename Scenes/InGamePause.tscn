@@ -96,7 +96,7 @@ margin_right = 495.0
 margin_bottom = 60.0
 grow_horizontal = 2
 grow_vertical = 2
-rect_min_size = Vector2( 160, 0 )
+rect_min_size = Vector2( 495, 0 )
 size_flags_horizontal = 0
 
 [node name="ContinueButton" type="HBoxContainer" parent="MarginContainer/VBoxContainer/GeneratorControls/VBoxContainer/CenterContainer/ContinueButton"]
