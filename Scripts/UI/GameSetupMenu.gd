@@ -13,6 +13,8 @@ onready var bsp_selector = $MarginContainer/VBoxContainer/GeneratorControls/Algo
 onready var ca_selector = $MarginContainer/VBoxContainer/GeneratorControls/AlgorithmsList/AlgorithmsList/AlgorithmsList/AlgorithmsList/CA/Selector
 onready var bsp_ca_selector = $MarginContainer/VBoxContainer/GeneratorControls/AlgorithmsList/AlgorithmsList/AlgorithmsList/AlgorithmsList/BSP_CA/Selector
 
+onready var seed_input = $MarginContainer/VBoxContainer/GeneratorControls/SeedInput/SeedInput/SeedInput/Input
+
 var menu_level = 0
 var first_level_item = 0
 var second_level_item = 0
@@ -78,14 +80,17 @@ func _handle_first_level_menu():
 
 func _handle_second_level_menu():
 	if Input.is_action_just_pressed("ui_down") and second_level_item < 2:
-		second_level_item += 1
-		set_current_selection(menu_level, first_level_item, second_level_item, selected_algo)
+		if first_level_item == 1:
+			second_level_item += 1
+			set_current_selection(menu_level, first_level_item, second_level_item, selected_algo)
 	elif Input.is_action_just_pressed("ui_up") and second_level_item > 0:
-		second_level_item -= 1
-		set_current_selection(menu_level, first_level_item, second_level_item, selected_algo)
+		if first_level_item == 1:
+			second_level_item -= 1
+			set_current_selection(menu_level, first_level_item, second_level_item, selected_algo)
 	elif Input.is_action_just_pressed("ui_left"):
-		menu_level -= 1
-		set_current_selection(menu_level, first_level_item, second_level_item, selected_algo)
+		if first_level_item == 1:
+			menu_level -= 1
+			set_current_selection(menu_level, first_level_item, second_level_item, selected_algo)
 	elif Input.is_action_just_pressed("ui_accept"):
 		_handle_accept()
 
@@ -99,7 +104,13 @@ func _handle_menu(menu_lvl):
 
 func _handle_accept():
 	if first_level_item == 0:
-		print("seed")
+		if menu_level == 0:
+			seed_input.grab_focus()
+		elif menu_level == 1:
+			seed_input.release_focus()
+			seed_marker.grab_focus()
+			seed_input
+		set_current_selection(menu_level, first_level_item, second_level_item, selected_algo)
 	elif first_level_item == 1:
 		if menu_level == 0:
 			if first_level_item == 1:
@@ -109,8 +120,8 @@ func _handle_accept():
 			selected_algo = second_level_item
 			set_current_selection(menu_level, first_level_item, second_level_item, selected_algo)
 	elif first_level_item == 2:
-		# Global._seed = seed_input
 		Global.selected_algorithm = selected_algo
+		print_debug(Global._seed)
 		get_tree().change_scene("res://Scenes/World.tscn")
 	elif first_level_item == 3:
 		get_tree().change_scene("res://Scenes/MainMenu.tscn")
@@ -118,3 +129,7 @@ func _handle_accept():
 
 func _ready():
 	set_current_selection(0, 0, 2, 2)
+
+
+func _on_seed_changed(new_text: String):
+	Global._seed = new_text

@@ -5,6 +5,7 @@ class_name CA_Generator
 var CellularAutomaton = load("res://Scripts/CA/CellularAutomaton.gd")
 var Constants = load("res://Scripts/Utils/Constants.gd")
 var Utils = load("res://Scripts/Utils/Utils.gd")
+var CommonAlgos = load("res://Scripts/Generators/Common.gd")
 
 var rng = null
 
@@ -177,7 +178,8 @@ func run(w, h):
 	_fill_level(room)
 	_outline()
 	_fill_singles()
-	_add_stuff(w, h)
+
+	CommonAlgos.new(rng).add_stuff(FLOOR, WALLS, STUFF)
 
 	var start_and_end = _add_enter_and_exit()
 

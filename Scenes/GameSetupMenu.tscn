@@ -108,6 +108,8 @@ size_flags_horizontal = 3
 custom_fonts/font = SubResource( 1 )
 align = 1
 context_menu_enabled = false
+shortcut_keys_enabled = false
+selecting_enabled = false
 placeholder_text = "put you seed here"
 caret_blink = true
 caret_blink_speed = 0.5
@@ -302,3 +304,5 @@ margin_bottom = 60.0
 rect_min_size = Vector2( 10, 0 )
 custom_fonts/font = SubResource( 1 )
 text = "Back to main menu"
+
+[connection signal="text_changed" from="MarginContainer/VBoxContainer/GeneratorControls/SeedInput/SeedInput/SeedInput/Input" to="." method="_on_seed_changed"]

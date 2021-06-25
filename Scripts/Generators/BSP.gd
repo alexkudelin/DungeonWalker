@@ -6,6 +6,7 @@ var BSPNode = load("res://Scripts/BSP/BSPNode.gd")
 var Room = load("res://Scripts/BSP/Room.gd")
 var Hall = load("res://Scripts/BSP/Hall.gd")
 var Constants = load("res://Scripts/Utils/Constants.gd")
+var CommonAlgos = load("res://Scripts/Generators/Common.gd")
 
 var rng = null
 
@@ -446,50 +447,6 @@ func generate_tree(x1, x2, y1, y2, depth=1, max_depth=null):
 	return {"left": left, "right": right}
 
 
-func _add_stuff(w, h):
-	var ignore = []
-
-	for x in range(w):
-		for y in range(h):
-			if not ignore.has([x, y]):
-				if FLOOR[y][x] == Constants.FloorTileCode.MID_FLOOR and WALLS[y][x] == Constants.WallTileCode.EMPTY:
-					var nb = Utils.get_moore_nb(WALLS, x, y)
-					var nc = Utils.count_objects_in_nb(nb, [Constants.WallTileCode.MID_WALL])
-
-					if nc in [5, 6]:
-						var p = rng.randf()
-
-						if p > 0 and p <= 0.25:
-							STUFF[y][x] = Constants.StuffTileCode.CHEST
-						elif p > 0.25 and p <= 0.35:
-							STUFF[y][x] = Constants.StuffTileCode.BIG_FLASK
-						elif p > 0.35 and p <= 0.45:
-							STUFF[y][x] = Constants.StuffTileCode.SMALL_FLASK
-						else:
-							continue
-
-						for item in nb:
-							ignore.append([item[0], item[1]])
-					else:
-						if rng.randf() <= 0.0075:
-							STUFF[y][x] = Constants.StuffTileCode.CHEST
-							for item in nb:
-								ignore.append([item[0], item[1]])
-							continue
-
-						if rng.randf() <= 0.01:
-							STUFF[y][x] = Constants.StuffTileCode.BIG_FLASK
-							for item in nb:
-								ignore.append([item[0], item[1]])
-							continue
-
-						if rng.randf() <= 0.01:
-							STUFF[y][x] = Constants.StuffTileCode.SMALL_FLASK
-							for item in nb:
-								ignore.append([item[0], item[1]])
-							continue
-	
-
 func _add_enter_and_exit(root):
 	var enter = root.get_left_leaf()
 	var exit = root.get_right_leaf()
@@ -538,7 +495,7 @@ func run(w, h):
 
 	_init_level(w, h)
 	_fill_level(root)
-	# _add_stuff(w, h)
+	CommonAlgos.new(rng).add_stuff(FLOOR, WALLS, STUFF)
 
 	var start_and_end = _add_enter_and_exit(root)
 

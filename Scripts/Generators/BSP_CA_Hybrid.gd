@@ -7,6 +7,7 @@ var CellularAutomaton = load("res://Scripts/CA/CellularAutomaton.gd")
 var CARoom = load("res://Scripts/CA/Room.gd")
 var Constants = load("res://Scripts/Utils/Constants.gd")
 var Utils = load("res://Scripts/Utils/Utils.gd")
+var CommonAlgos = load("res://Scripts/Generators/Common.gd")
 
 var BSP_Generator = load("res://Scripts/Generators/BSP.gd")
 
@@ -122,48 +123,6 @@ func _fill_level(node):
 					elif val == Constants.CA_Tiles.DEAD:
 						FLOOR[y][x] = Constants.FloorTileCode.EMPTY
 						WALLS[y][x] = Constants.WallTileCode.EMPTY
-
-func _add_stuff(w, h):
-	var ignore = []
-
-	for x in range(w):
-		for y in range(h):
-			if not ignore.has([x, y]):
-				if FLOOR[y][x] == Constants.FloorTileCode.MID_FLOOR and WALLS[y][x] == Constants.WallTileCode.EMPTY:
-					var nb = Utils.get_moore_nb(WALLS, x, y)
-					var nc = Utils.count_objects_in_nb(nb, [Constants.WallTileCode.MID_WALL])
-					if nc in [5, 6]:
-						var p = rng.randf()
-
-						if p > 0 and p <= 0.25:
-							STUFF[y][x] = Constants.StuffTileCode.CHEST
-						elif p > 0.25 and p <= 0.35:
-							STUFF[y][x] = Constants.StuffTileCode.BIG_FLASK
-						elif p > 0.35 and p <= 0.45:
-							STUFF[y][x] = Constants.StuffTileCode.SMALL_FLASK
-						else:
-							continue
-
-						for item in nb:
-							ignore.append([item[0], item[1]])
-					else:
-						if rng.randf() <= 0.0075:
-							STUFF[y][x] = Constants.StuffTileCode.CHEST
-							for item in nb:
-								ignore.append([item[0], item[1]])
-							continue
-
-						if rng.randf() <= 0.01:
-							STUFF[y][x] = Constants.StuffTileCode.BIG_FLASK
-							for item in nb:
-								ignore.append([item[0], item[1]])
-							continue
-
-						if rng.randf() <= 0.01:
-							STUFF[y][x] = Constants.StuffTileCode.SMALL_FLASK
-							for item in nb:
-								ignore.append([item[0], item[1]])
-							continue
 
 
 func _add_enter_and_exit(root):
@@ -299,7 +258,8 @@ func run(w, h, max_depth=null):
 	_fill_level(root)
 	_outline()
 	_fill_singles()
-	_add_stuff(w, h)
+
+	CommonAlgos.new(rng).add_stuff(FLOOR, WALLS, STUFF)
 
 	var start_and_end = _add_enter_and_exit(root)
 
