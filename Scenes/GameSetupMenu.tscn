@@ -15,6 +15,9 @@ font_data = ExtResource( 1 )
 anchor_right = 1.0
 anchor_bottom = 1.0
 script = ExtResource( 2 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
 [node name="ColorRect" type="ColorRect" parent="."]
 anchor_right = 1.0
@@ -153,7 +156,7 @@ margin_bottom = 188.0
 size_flags_horizontal = 3
 
 [node name="BSP" type="HBoxContainer" parent="MarginContainer/VBoxContainer/GeneratorControls/AlgorithmsList/AlgorithmsList/AlgorithmsList/AlgorithmsList"]
-margin_right = 221.0
+margin_right = 954.0
 margin_bottom = 60.0
 rect_min_size = Vector2( 221, 0 )
 size_flags_horizontal = 5

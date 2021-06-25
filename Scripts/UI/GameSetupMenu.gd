@@ -108,9 +108,8 @@ func _handle_accept():
 			set_current_selection(menu_level, first_level_item, second_level_item, selected_algo)
 	elif first_level_item == 2:
 		print("algo: ", selected_algo)
-		# print("start")
 	elif first_level_item == 3:
-		print("back")
+		get_tree().change_scene("res://Scenes/MainMenu.tscn")
 
 
 func _ready():
