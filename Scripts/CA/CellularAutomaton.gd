@@ -57,24 +57,6 @@ func _initial_matrix_fill():
 				matrix[y][x] = [Constants.CA_Tiles.ALIVE, Constants.CA_Tiles.DEAD][int(rng.randf() < R)]
 
 
-func _make_step():
-	var new_matrix = _copy_matrix(matrix)
-
-	var w = len(matrix[0])
-	var h = len(matrix)
-
-	for x in range(w):
-		for y in range(h):
-			var nr = Utils.count_objects_in_nb(Utils.get_moore_nb(matrix, x, y), [Constants.CA_Tiles.DEAD])
-
-			if nr > MIN_NUM_OF_NB_TO_ROOM_WALL:
-				new_matrix[y][x] = Constants.CA_Tiles.DEAD
-			elif nr < MAX_NUM_OF_NB_TO_SPACE:
-				new_matrix[y][x] = Constants.CA_Tiles.ALIVE
-
-	return new_matrix
-
-
 func __pourify(m, x, y, color):
 	var pourified = 0
 	var q = [[x, y]]
@@ -125,7 +107,25 @@ func _find_dominant_color(color_distrib):
 
 	return color_distrib_arr[0][0]
 
-	
+
+func _make_step():
+	var new_matrix = _copy_matrix(matrix)
+
+	var w = len(matrix[0])
+	var h = len(matrix)
+
+	for x in range(w):
+		for y in range(h):
+			var nr = Utils.count_objects_in_nb(Utils.get_moore_nb(matrix, x, y), [Constants.CA_Tiles.DEAD])
+
+			if nr > MIN_NUM_OF_NB_TO_ROOM_WALL:
+				new_matrix[y][x] = Constants.CA_Tiles.DEAD
+			elif nr < MAX_NUM_OF_NB_TO_SPACE:
+				new_matrix[y][x] = Constants.CA_Tiles.ALIVE
+
+	return new_matrix
+
+
 func _fill_caverns():
 	var w = len(matrix[0])
 	var h = len(matrix)
@@ -141,52 +141,6 @@ func _fill_caverns():
 					matrix[y][x] = Constants.CA_Tiles.DEAD
 				else:
 					matrix[y][x] = Constants.CA_Tiles.ALIVE
-					
-		
-func _smooth_singles():
-	var w = len(matrix[0])
-	var h = len(matrix)
-
-	while true:
-		var q = []
-
-		for x in range(1, w-1):
-			for y in range(1, h-1):
-				if matrix[y][x] == Constants.CA_Tiles.DEAD:
-					var nb = Utils.get_von_neumann_nb(matrix, x, y)
-					var nc = Utils.count_objects_in_nb(nb, [Constants.CA_Tiles.ALIVE])
-
-					if nc >= 3:
-						q.append([x, y])
-
-						for item in nb:
-							if item != null and item[2] == Constants.CA_Tiles.DEAD:
-								if Utils.count_objects_in_nb(Utils.get_von_neumann_nb(matrix, item[0], item[1]), [Constants.CA_Tiles.DEAD]) >= 3:
-									q.append([item[0], item[1]])
-					elif nc == 2:
-						var n = Utils.get_von_neumann_nb(matrix, x, y)
-
-						var vertical_nbs_are_spaces = (n[0] and n[2] and n[0][2] == Constants.CA_Tiles.ALIVE and n[2][2] == Constants.CA_Tiles.ALIVE)
-						var horizontal_nbs_are_spaces = (n[1] and n[3] and n[1][2] == Constants.CA_Tiles.ALIVE and n[3][2] == Constants.CA_Tiles.ALIVE)
-
-						if vertical_nbs_are_spaces or horizontal_nbs_are_spaces:
-							q.append([x, y])
-		if not q:
-			break
-		else:
-			while q:
-				var t = q.pop_front()
-				var x = t[0]
-				var y = t[1]
-	
-				matrix[y][x] = Constants.CA_Tiles.ALIVE
-
-func _is_vertical_triple(nb):
-	return (nb[0] and nb[2] and nb[0][2] == Constants.CA_Tiles.DEAD and nb[2][2] == Constants.CA_Tiles.DEAD)
-
-
-func _is_horizontal_triple(nb):
-	return (nb[1] and nb[3] and nb[1][2] == Constants.CA_Tiles.DEAD and nb[3][2] == Constants.CA_Tiles.DEAD)
 
 
 func _smooth():
@@ -240,29 +194,6 @@ func _set_borders():
 				matrix[y][x] = Constants.CA_Tiles.DEAD
 
 
-func _highlight_room_outline():
-	var w = len(matrix[0])
-	var h = len(matrix)
-
-	var q = []
-
-	while true:
-		for x in range(w):
-			for y in range(h):
-				if matrix[y][x] == Constants.CA_Tiles.DEAD:
-					var nb = Utils.get_von_neumann_nb(matrix, x, y)
-
-					if Utils.count_objects_in_nb(nb, [Constants.CA_Tiles.ALIVE]) > 0:
-						q.append([x,y])
-
-		if not q:
-			break
-
-		while q:
-			var t = q.pop_front()
-			matrix[t[1]][t[0]] = Constants.CA_Tiles.OUTLINE
-
-
 func _smooth_corners():
 	var w = len(matrix[0])
 	var h = len(matrix)
@@ -298,7 +229,6 @@ func do_process(width, height):
 	_fill_caverns()
 	_smooth()
 	_set_borders()
-	# _highlight_room_outline()
 
 
 func _init(r, e, min_nbs_to_rock, max_nbs_to_space, _rng):
