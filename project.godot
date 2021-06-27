@@ -59,6 +59,11 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://Scripts/BSP/Room.gd"
 }, {
+"base": "Node2D",
+"class": "TextureMaps",
+"language": "GDScript",
+"path": "res://Scripts/TextureMaps.gd"
+}, {
 "base": "Reference",
 "class": "Utils",
 "language": "GDScript",
@@ -75,6 +80,7 @@ _global_script_class_icons={
 "Constants": "",
 "Hall": "",
 "Room": "",
+"TextureMaps": "",
 "Utils": ""
 }
 

@@ -11,7 +11,7 @@
 [ext_resource path="res://Assets/heroes/knight_m_idle_anim_f0.png" type="Texture" id=9]
 
 [sub_resource type="RectangleShape2D" id=1]
-extents = Vector2( 5.44315, 7.54023 )
+extents = Vector2( 5.5, 7.5 )
 
 [sub_resource type="SpriteFrames" id=2]
 animations = [ {
@@ -30,9 +30,10 @@ animations = [ {
 script = ExtResource( 2 )
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-position = Vector2( 0.618717, 6.5 )
+position = Vector2( 8, 8 )
 shape = SubResource( 1 )
 
 [node name="AnimatedSprite" type="AnimatedSprite" parent="."]
 frames = SubResource( 2 )
 animation = "idle"
+offset = Vector2( 8, 2 )

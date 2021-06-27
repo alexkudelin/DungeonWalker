@@ -31,8 +31,8 @@ func _fill_level(node):
 		if node.room:
 			var r = node.room
 
-			for x in range(r.x1(), r.x2()+1):
-				for y in range(r.y1(), r.y2()+1):
+			for x in range(r.x1()+1, r.x2()):
+				for y in range(r.y1()+1, r.y2()):
 					FLOOR[y][x] = Constants.FloorTileCode.MID_FLOOR
 					WALLS[y][x] = Constants.WallTileCode.EMPTY
 
@@ -51,11 +51,6 @@ func _fill_level(node):
 
 		if node.hall:
 			var h = node.hall
-
-			for x in range(h.x1(), h.x1() + h.get_width()):
-				for y in range(h.y1(), h.y1() + h.get_height()):
-					FLOOR[y][x] = Constants.FloorTileCode.MID_FLOOR
-
 			var hall_direction = h.get_direction()
 
 			if hall_direction == Constants.Direction.HORIZONTAL:
@@ -65,6 +60,7 @@ func _fill_level(node):
 
 				for x in range(h.x1()-1, h.x2()+1):
 					WALLS[h.y][x] = Constants.WallTileCode.EMPTY
+					FLOOR[h.y][x] = Constants.FloorTileCode.MID_FLOOR
 			elif hall_direction == Constants.Direction.VERTICAL:
 				for y in range(h.y1()-1, h.y1() + h.get_height()):
 					WALLS[y][h.x1()] = Constants.WallTileCode.MID_WALL
@@ -72,6 +68,7 @@ func _fill_level(node):
 
 				for y in range(h.y1()-1, h.y2() + 1):
 					WALLS[y][h.x] = Constants.WallTileCode.EMPTY
+					FLOOR[y][h.x] = Constants.FloorTileCode.MID_FLOOR
 
 
 func _init_level(w, h):

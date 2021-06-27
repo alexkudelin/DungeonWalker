@@ -10,6 +10,9 @@ var BSP_Generator = load("res://Scripts/Generators/BSP.gd")
 var CA_Generator = load("res://Scripts/Generators/CA.gd")
 var BSP_CA_Generator = load("res://Scripts/Generators/BSP_CA_Hybrid.gd")
 
+var TextureMaps = preload("res://Scripts/TextureMaps.gd").new()
+onready var gui = get_node("./GUI")
+
 var rng = RandomNumberGenerator.new()
 
 const W = 64
@@ -20,68 +23,20 @@ onready var WALLS = $Walls
 onready var STUFF = $Stuff
 onready var PLAYER = $Player
 
-onready var FloorTileTextureMap = {
-	Constants.FloorTileCode.MID_FLOOR: [
-		FLOOR.tile_set.find_tile_by_name("caves-rails-floor-0"),
-		FLOOR.tile_set.find_tile_by_name("caves-rails-floor-1"),
-		FLOOR.tile_set.find_tile_by_name("caves-rails-floor-2"),
-		FLOOR.tile_set.find_tile_by_name("caves-rails-floor-3"),
-		FLOOR.tile_set.find_tile_by_name("caves-rails-floor-4"),
-		FLOOR.tile_set.find_tile_by_name("caves-rails-floor-5"),
-		FLOOR.tile_set.find_tile_by_name("caves-rails-floor-6"),
-		FLOOR.tile_set.find_tile_by_name("caves-rails-floor-7"),
-	],
+const Chest = preload("res://Scenes/Chest.tscn")
+const ChestArea = preload("res://Scenes/ChestArea.tscn")
 
-	Constants.FloorTileCode.EMPTY: [
-		FLOOR.tile_set.find_tile_by_name("caves-rails-floor-empty"),
-	],
-}
 
-onready var WallTileTextureMap = {
-	Constants.WallTileCode.MID_WALL: [
-		WALLS.tile_set.find_tile_by_name("caves-rails-wall-0"),
-	],
+func _add_chest(x, y):
+	var chest = Chest.instance()
+	var chest_area = ChestArea.instance()
 
-	Constants.WallTileCode.EMPTY: [
-		WALLS.tile_set.find_tile_by_name("caves-rails-wall-empty"),
-	],
+	chest.set_position(STUFF.map_to_world(Vector2(x, y)))
+	# chest_area.set_position(STUFF.map_to_world(Vector2(x, y)))
 
-	Constants.WallTileCode.NODE_WALL: [
-		WALLS.tile_set.find_tile_by_name("node-wall"),
-	]
-}
-
-onready var StuffTileTextureMap = {
-	Constants.StuffTileCode.CHEST: [
-		STUFF.tile_set.find_tile_by_name("chest-empty"),
-	],
-
-	Constants.StuffTileCode.BIG_FLASK: [
-		STUFF.tile_set.find_tile_by_name("flask-big-blue"),
-		STUFF.tile_set.find_tile_by_name("flask-big-green"),
-		STUFF.tile_set.find_tile_by_name("flask-big-red"),
-		STUFF.tile_set.find_tile_by_name("flask-big-yellow"),
-	],
-
-	Constants.StuffTileCode.SMALL_FLASK: [
-		STUFF.tile_set.find_tile_by_name("flask-blue"),
-		STUFF.tile_set.find_tile_by_name("flask-green"),
-		STUFF.tile_set.find_tile_by_name("flask-red"),
-		STUFF.tile_set.find_tile_by_name("flask-yellow"),
-	],
-
-	Constants.StuffTileCode.EMPTY: [
-		STUFF.tile_set.find_tile_by_name("stuff-empty"),
-	],
-
-	Constants.StuffTileCode.LEVEL_ENTER: [
-		STUFF.tile_set.find_tile_by_name("level-enter"),
-	],
-
-	Constants.StuffTileCode.LEVEL_EXIT: [
-		STUFF.tile_set.find_tile_by_name("level-exit"),
-	]
-}
+	chest.add_child(chest_area)
+	# self.add_child(chest_area)
+	self.add_child(chest)
 
 
 func _draw_dungeon(map):
@@ -94,16 +49,33 @@ func _draw_dungeon(map):
 
 	for x in range(w):
 		for y in range(h):
-			FLOOR.set_cell(x, y, FloorTileTextureMap[level_floor[y][x]][0])
-			WALLS.set_cell(x, y, WallTileTextureMap[level_walls[y][x]][0])
-			STUFF.set_cell(x, y, StuffTileTextureMap[level_stuff[y][x]][0])
+			var floor_texture = TextureMaps.FloorTextures[level_floor[y][x]]
+			var idx = 0
+
+			if floor_texture.size() > 1:
+				idx = rng.randi() % floor_texture.size()
+
+			FLOOR.set_cell(x, y, floor_texture[idx])
+			WALLS.set_cell(x, y, TextureMaps.WallTextures[level_walls[y][x]][0])
+
+			if level_stuff[y][x] == Constants.StuffTileCode.CHEST:
+				_add_chest(x, y)
+			else:
+				var stuff_texture = TextureMaps.StuffTextures[level_stuff[y][x]]
+				idx = 0
+
+				if stuff_texture.size () > 1:
+					idx = rng.randi() % stuff_texture.size()
+
+				STUFF.set_cell(x, y, stuff_texture[idx])
 
 
 func _clean(w, h):
 	for i in range(-2*w, 2*w+1):
 		for j in range(-2*h, 2*h+1):
-			FLOOR.set_cell(i, j, FloorTileTextureMap[Constants.FloorTileCode.EMPTY][0])
-			WALLS.set_cell(i, j, WallTileTextureMap[Constants.WallTileCode.EMPTY][0])
+			FLOOR.set_cell(i, j, TextureMaps.FloorTextures[Constants.FloorTileCode.EMPTY][0])
+			WALLS.set_cell(i, j, TextureMaps.WallTextures[Constants.WallTileCode.EMPTY][0])
+			STUFF.set_cell(i, j, TextureMaps.StuffTextures[Constants.StuffTileCode.EMPTY][0])
 
 
 func _create_map():
@@ -131,6 +103,10 @@ func _create_map():
 	_draw_dungeon(map)
 
 	PLAYER.position = FLOOR.map_to_world(Vector2(map.start[0], map.start[1]))
+
+	for area in get_tree().get_nodes_in_group("LootAreas"):
+		area.connect("body_entered", gui, "OnChestAreaEntered")
+		area.connect("body_exited", gui, "OnChestAreaExited")
 
 
 func _process(_delta):
