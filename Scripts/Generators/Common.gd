@@ -5,6 +5,13 @@ var Utils = load("res://Scripts/Utils/Utils.gd")
 
 var rng = null
 
+var stuff_list = [
+	Constants.StuffTileCode.CHEST,
+	Constants.StuffTileCode.BIG_FLASK,
+	Constants.StuffTileCode.SMALL_FLASK,
+	Constants.StuffTileCode.COIN,
+]
+
 func _check_neighbourhood(nb, nc):
 	if nc == 7:
 		return nb[1][2] == Constants.WallTileCode.EMPTY or nb[3][2] == Constants.WallTileCode.EMPTY or nb[4][2] == Constants.WallTileCode.EMPTY or nb[7][2] == Constants.WallTileCode.EMPTY
@@ -45,16 +52,7 @@ func add_stuff(floor_grid, walls_grid, stuff_grid):
 					if nc in [5, 6, 7]:
 						if _check_neighbourhood(nb, nc):
 							if rng.randf() < 0.66:
-								var p = rng.randf()
-
-								if p > 0 and p <= 0.33:
-									stuff_grid[y][x] = Constants.StuffTileCode.CHEST
-								elif p > 0.33 and p <= 0.66:
-									stuff_grid[y][x] = Constants.StuffTileCode.BIG_FLASK
-								elif p > 0.66 and p <= 0.99:
-									stuff_grid[y][x] = Constants.StuffTileCode.SMALL_FLASK
-								else:
-									continue
+								stuff_grid[y][x] = stuff_list[rng.randi() % stuff_list.size()]
 
 							for item in nb:
 								ignore.append([item[0], item[1]])
@@ -62,7 +60,15 @@ func add_stuff(floor_grid, walls_grid, stuff_grid):
 						var p = rng.randf()
 
 						if p <= 0.0375:
-							stuff_grid[y][x] = Constants.StuffTileCode.CHEST
+							var skip = false
+
+							for item in nb:
+								if ignore.has([item[0], item[1]]):
+									skip = true
+									break
+
+							if not skip:
+								stuff_grid[y][x] = Constants.StuffTileCode.CHEST
 						elif 0.0375 < p and p <= 0.0875:
 							stuff_grid[y][x] = Constants.StuffTileCode.BIG_FLASK
 						elif 0.0875 < p and p <= 0.1375:

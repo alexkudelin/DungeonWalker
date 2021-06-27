@@ -53,6 +53,7 @@ enum StuffTileCode {
 	CHEST = 0,
 	BIG_FLASK,
 	SMALL_FLASK,
+	COIN,
 
 	LEVEL_ENTER,
 	LEVEL_EXIT,

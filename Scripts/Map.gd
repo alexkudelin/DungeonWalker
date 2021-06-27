@@ -11,7 +11,6 @@ var CA_Generator = load("res://Scripts/Generators/CA.gd")
 var BSP_CA_Generator = load("res://Scripts/Generators/BSP_CA_Hybrid.gd")
 
 var TextureMaps = preload("res://Scripts/TextureMaps.gd").new()
-# onready var gui = get_node("./GUI")
 
 var rng = RandomNumberGenerator.new()
 
@@ -23,21 +22,20 @@ onready var WALLS = $Walls
 onready var STUFF = $Stuff
 onready var PLAYER = $Player
 
-const Chest = preload("res://Scenes/Chest.tscn")
-# const ChestArea = preload("res://Scenes/ChestArea.tscn")
+const Chest = preload("res://Scenes/Chest/Chest.tscn")
+const Coin = preload("res://Scenes/Coin/Coin.tscn")
 
-onready var chestareascript = load("res://Scripts/ChestGui.gd")
 
 func _add_chest(x, y):
 	var chest = Chest.instance()
-	# var chest_area = ChestArea.instance()
-
 	chest.set_position(STUFF.map_to_world(Vector2(x, y)))
-	# chest_area.set_position(STUFF.map_to_world(Vector2(x, y)))
+	STUFF.add_child(chest)
 
-	# chest.add_child(chest_area)
-	# self.add_child(chest_area)
-	self.add_child(chest)
+
+func _add_coin(x, y):
+	var coin = Coin.instance()
+	coin.set_position(STUFF.map_to_world(Vector2(x, y)))
+	STUFF.add_child(coin)
 
 
 func _draw_dungeon(map):
@@ -61,6 +59,8 @@ func _draw_dungeon(map):
 
 			if level_stuff[y][x] == Constants.StuffTileCode.CHEST:
 				_add_chest(x, y)
+			elif level_stuff[y][x] == Constants.StuffTileCode.COIN:
+				_add_coin(x, y)
 			else:
 				var stuff_texture = TextureMaps.StuffTextures[level_stuff[y][x]]
 				idx = 0
@@ -105,9 +105,13 @@ func _create_map():
 
 	PLAYER.position = FLOOR.map_to_world(Vector2(map.start[0], map.start[1]))
 
-	for area in get_tree().get_nodes_in_group("LootAreas"):
+	for area in get_tree().get_nodes_in_group("ChestAreas"):
 		area.connect("body_entered", area, "OnChestAreaEntered")
 		area.connect("body_exited", area, "OnChestAreaExited")
+
+	for area in get_tree().get_nodes_in_group("CoinAreas"):
+		area.connect("body_entered", area, "OnCoinAreaEntered")
+		area.connect("body_exited", area, "OnCoinAreaExited")
 
 
 func _process(_delta):

@@ -11,7 +11,6 @@ func _process(_delta):
 		if action_state == 0:
 			animated_sprite.play("closed")
 		elif action_state == 1:
-			print("looting", get_node("."))
 			animated_sprite.play("open")
 			is_opened = true
 
