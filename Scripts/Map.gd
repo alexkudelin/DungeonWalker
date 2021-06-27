@@ -11,7 +11,7 @@ var CA_Generator = load("res://Scripts/Generators/CA.gd")
 var BSP_CA_Generator = load("res://Scripts/Generators/BSP_CA_Hybrid.gd")
 
 var TextureMaps = preload("res://Scripts/TextureMaps.gd").new()
-onready var gui = get_node("./GUI")
+# onready var gui = get_node("./GUI")
 
 var rng = RandomNumberGenerator.new()
 
@@ -24,17 +24,18 @@ onready var STUFF = $Stuff
 onready var PLAYER = $Player
 
 const Chest = preload("res://Scenes/Chest.tscn")
-const ChestArea = preload("res://Scenes/ChestArea.tscn")
+# const ChestArea = preload("res://Scenes/ChestArea.tscn")
 
+onready var chestareascript = load("res://Scripts/ChestGui.gd")
 
 func _add_chest(x, y):
 	var chest = Chest.instance()
-	var chest_area = ChestArea.instance()
+	# var chest_area = ChestArea.instance()
 
 	chest.set_position(STUFF.map_to_world(Vector2(x, y)))
 	# chest_area.set_position(STUFF.map_to_world(Vector2(x, y)))
 
-	chest.add_child(chest_area)
+	# chest.add_child(chest_area)
 	# self.add_child(chest_area)
 	self.add_child(chest)
 
@@ -105,8 +106,8 @@ func _create_map():
 	PLAYER.position = FLOOR.map_to_world(Vector2(map.start[0], map.start[1]))
 
 	for area in get_tree().get_nodes_in_group("LootAreas"):
-		area.connect("body_entered", gui, "OnChestAreaEntered")
-		area.connect("body_exited", gui, "OnChestAreaExited")
+		area.connect("body_entered", area, "OnChestAreaEntered")
+		area.connect("body_exited", area, "OnChestAreaExited")
 
 
 func _process(_delta):
