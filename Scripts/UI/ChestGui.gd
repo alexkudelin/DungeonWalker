@@ -7,7 +7,7 @@ var action_state = 0
 var is_opened = false
 
 func _process(_delta):
-	if Input.is_action_just_pressed("player_open_chest"):
+	if Input.is_action_just_pressed("player_interact"):
 		if action_state == 0:
 			animated_sprite.play("closed")
 		elif action_state == 1:

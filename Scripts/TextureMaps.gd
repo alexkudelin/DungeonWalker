@@ -45,17 +45,17 @@ var StuffTextures = {
 	],
 
 	Constants.StuffTileCode.BIG_FLASK: [
-		stuff_tilset.find_tile_by_name("flask-big-blue"),
-		stuff_tilset.find_tile_by_name("flask-big-green"),
-		stuff_tilset.find_tile_by_name("flask-big-red"),
-		stuff_tilset.find_tile_by_name("flask-big-yellow")
+		load("res://Assets/stuff/flask_big_blue.png"),
+		load("res://Assets/stuff/flask_big_green.png"),
+		load("res://Assets/stuff/flask_big_red.png"),
+		load("res://Assets/stuff/flask_big_yellow.png"),
 	],
 
 	Constants.StuffTileCode.SMALL_FLASK: [
-		stuff_tilset.find_tile_by_name("flask-blue"),
-		stuff_tilset.find_tile_by_name("flask-green"),
-		stuff_tilset.find_tile_by_name("flask-red"),
-		stuff_tilset.find_tile_by_name("flask-yellow")
+		load("res://Assets/stuff/flask_blue.png"),
+		load("res://Assets/stuff/flask_green.png"),
+		load("res://Assets/stuff/flask_red.png"),
+		load("res://Assets/stuff/flask_yellow.png"),
 	],
 
 	Constants.StuffTileCode.EMPTY: [
@@ -67,6 +67,6 @@ var StuffTextures = {
 	],
 
 	Constants.StuffTileCode.LEVEL_EXIT: [
-		stuff_tilset.find_tile_by_name("level-exit")
+		stuff_tilset.find_tile_by_name("stair_nextlevel")
 	]
 }

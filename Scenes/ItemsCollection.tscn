@@ -1,0 +1,187 @@
+[gd_scene load_steps=18 format=2]
+
+[ext_resource path="res://Assets/stuff/flask_red.png" type="Texture" id=1]
+[ext_resource path="res://Assets/stuff/flask_blue.png" type="Texture" id=2]
+[ext_resource path="res://Assets/stuff/flask_green.png" type="Texture" id=3]
+[ext_resource path="res://Assets/stuff/flask_yellow.png" type="Texture" id=4]
+[ext_resource path="res://Assets/stuff/flask_big_green.png" type="Texture" id=5]
+[ext_resource path="res://Assets/stuff/flask_big_blue.png" type="Texture" id=6]
+[ext_resource path="res://Assets/stuff/flask_big_red.png" type="Texture" id=7]
+[ext_resource path="res://Assets/stuff/flask_big_yellow.png" type="Texture" id=8]
+[ext_resource path="res://Assets/stuff/coin_anim_f2.png" type="Texture" id=9]
+[ext_resource path="res://Assets/stuff/coin_anim_f1.png" type="Texture" id=10]
+[ext_resource path="res://Assets/stuff/coin_anim_f3.png" type="Texture" id=11]
+[ext_resource path="res://Assets/stuff/coin_anim_f0.png" type="Texture" id=12]
+[ext_resource path="res://Assets/Born2bSportyV2.ttf" type="DynamicFontData" id=13]
+
+[sub_resource type="AnimatedTexture" id=4]
+flags = 4
+frames = 4
+frame_0/texture = ExtResource( 12 )
+frame_1/texture = ExtResource( 10 )
+frame_1/delay_sec = 0.0
+frame_2/texture = ExtResource( 9 )
+frame_2/delay_sec = 0.0
+frame_3/texture = ExtResource( 11 )
+frame_3/delay_sec = 0.0
+
+[sub_resource type="DynamicFont" id=1]
+font_data = ExtResource( 13 )
+
+[sub_resource type="AnimatedTexture" id=2]
+flags = 4
+frames = 4
+fps = 0.5
+frame_0/texture = ExtResource( 6 )
+frame_1/texture = ExtResource( 5 )
+frame_1/delay_sec = 0.0
+frame_2/texture = ExtResource( 7 )
+frame_2/delay_sec = 0.0
+frame_3/texture = ExtResource( 8 )
+frame_3/delay_sec = 0.0
+
+[sub_resource type="AnimatedTexture" id=3]
+flags = 4
+frames = 4
+fps = 0.5
+frame_0/texture = ExtResource( 2 )
+frame_1/texture = ExtResource( 3 )
+frame_1/delay_sec = 0.0
+frame_2/texture = ExtResource( 1 )
+frame_2/delay_sec = 0.0
+frame_3/texture = ExtResource( 4 )
+frame_3/delay_sec = 0.0
+
+[node name="CanvasLayer" type="CanvasLayer"]
+scale = Vector2( 4, 4 )
+transform = Transform2D( 4, 0, 0, 4, 0, 0 )
+
+[node name="Stats" type="VBoxContainer" parent="."]
+margin_right = 40.0
+margin_bottom = 40.0
+custom_constants/separation = -3
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Coins" type="HBoxContainer" parent="Stats"]
+margin_right = 40.0
+margin_bottom = 16.0
+
+[node name="CoinIcon" type="CenterContainer" parent="Stats/Coins"]
+anchor_left = 0.1
+anchor_right = 0.1
+margin_right = 8.0
+margin_bottom = 16.0
+
+[node name="Coins" type="TextureRect" parent="Stats/Coins/CoinIcon"]
+margin_top = 4.0
+margin_right = 8.0
+margin_bottom = 12.0
+texture = SubResource( 4 )
+
+[node name="EqualSign" type="CenterContainer" parent="Stats/Coins"]
+margin_left = 12.0
+margin_right = 19.0
+margin_bottom = 16.0
+
+[node name="Label" type="Label" parent="Stats/Coins/EqualSign"]
+margin_right = 7.0
+margin_bottom = 16.0
+custom_fonts/font = SubResource( 1 )
+text = "="
+align = 1
+valign = 1
+
+[node name="CoinValue" type="CenterContainer" parent="Stats/Coins"]
+margin_left = 23.0
+margin_right = 30.0
+margin_bottom = 16.0
+
+[node name="Label" type="Label" parent="Stats/Coins/CoinValue"]
+margin_right = 7.0
+margin_bottom = 16.0
+custom_fonts/font = SubResource( 1 )
+text = "0"
+align = 1
+valign = 1
+
+[node name="BigFlasks" type="HBoxContainer" parent="Stats"]
+margin_top = 13.0
+margin_right = 40.0
+margin_bottom = 29.0
+
+[node name="BigFlaskIcon" type="CenterContainer" parent="Stats/BigFlasks"]
+margin_right = 16.0
+margin_bottom = 16.0
+
+[node name="Flask" type="TextureRect" parent="Stats/BigFlasks/BigFlaskIcon"]
+margin_right = 16.0
+margin_bottom = 16.0
+texture = SubResource( 2 )
+
+[node name="EqualSign" type="CenterContainer" parent="Stats/BigFlasks"]
+margin_left = 20.0
+margin_right = 27.0
+margin_bottom = 16.0
+
+[node name="Label" type="Label" parent="Stats/BigFlasks/EqualSign"]
+margin_right = 7.0
+margin_bottom = 16.0
+custom_fonts/font = SubResource( 1 )
+text = "="
+align = 1
+valign = 1
+
+[node name="BigFlaskValue" type="CenterContainer" parent="Stats/BigFlasks"]
+margin_left = 31.0
+margin_right = 38.0
+margin_bottom = 16.0
+
+[node name="Label" type="Label" parent="Stats/BigFlasks/BigFlaskValue"]
+margin_right = 7.0
+margin_bottom = 16.0
+custom_fonts/font = SubResource( 1 )
+text = "0"
+align = 1
+valign = 1
+
+[node name="SmallFlasks" type="HBoxContainer" parent="Stats"]
+margin_top = 26.0
+margin_right = 40.0
+margin_bottom = 42.0
+
+[node name="SmallFlaskIcon" type="CenterContainer" parent="Stats/SmallFlasks"]
+margin_right = 16.0
+margin_bottom = 16.0
+
+[node name="Flask" type="TextureRect" parent="Stats/SmallFlasks/SmallFlaskIcon"]
+margin_right = 16.0
+margin_bottom = 16.0
+texture = SubResource( 3 )
+
+[node name="EqualSign" type="CenterContainer" parent="Stats/SmallFlasks"]
+margin_left = 20.0
+margin_right = 27.0
+margin_bottom = 16.0
+
+[node name="Label" type="Label" parent="Stats/SmallFlasks/EqualSign"]
+margin_right = 7.0
+margin_bottom = 16.0
+custom_fonts/font = SubResource( 1 )
+text = "="
+align = 1
+valign = 1
+
+[node name="SmallFlaskValue" type="CenterContainer" parent="Stats/SmallFlasks"]
+margin_left = 31.0
+margin_right = 38.0
+margin_bottom = 16.0
+
+[node name="Label" type="Label" parent="Stats/SmallFlasks/SmallFlaskValue"]
+margin_right = 7.0
+margin_bottom = 16.0
+custom_fonts/font = SubResource( 1 )
+text = "0"
+align = 1
+valign = 1

@@ -21,7 +21,7 @@ animations = [ {
 position = Vector2( 8, 8 )
 frames = SubResource( 1 )
 animation = "idle"
-frame = 3
+frame = 1
 playing = true
 
 [node name="CoinArea" parent="." instance=ExtResource( 5 )]
