@@ -27,7 +27,7 @@ func _process(_delta):
 
 func _handle_selection():
 	if current_item == 0:
-		get_tree().change_scene("res://Scenes/GameSetupMenu.tscn")
+		get_tree().change_scene("res://Scenes/UI/GameSetupMenu.tscn")
 	elif current_item == 1:
 		get_tree().quit(0)
 

@@ -28,7 +28,7 @@ onready var PLAYER = $Player
 
 const Chest = preload("res://Scenes/Chest/Chest.tscn")
 const Coin = preload("res://Scenes/Coin/Coin.tscn")
-const LevelExit = preload("res://Scenes/Exit/Exit.tscn")
+const LevelExit = preload("res://Scenes/LevelExit/LevelExit.tscn")
 const BigFlask = preload("res://Scenes/Flask/BigFlask/BigFlask.tscn")
 const SmallFlask = preload("res://Scenes/Flask/SmallFlask/SmallFlask.tscn")
 

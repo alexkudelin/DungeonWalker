@@ -9,7 +9,7 @@ func _process(_delta):
 		if action_state == 0:
 			pass
 		elif action_state == 1:
-			get_tree().change_scene("res://Scenes/GameSetupMenu.tscn")
+			get_tree().change_scene("res://Scenes/UI/GameSetupMenu.tscn")
 
 
 func OnExitAreaEntered(_body):

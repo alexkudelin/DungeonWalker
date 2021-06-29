@@ -57,7 +57,7 @@ func _handle_selection():
 	elif current_item == 1:
 		get_tree().paused = false
 		set_visibility(false)
-		get_tree().change_scene("res://Scenes/GameSetupMenu.tscn")
+		get_tree().change_scene("res://Scenes/UI/GameSetupMenu.tscn")
 	elif current_item == 2:
 		get_tree().paused = false
 		set_visibility(false)

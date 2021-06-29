@@ -122,7 +122,7 @@ func _handle_accept():
 		Global.selected_algorithm = selected_algo
 		get_tree().change_scene("res://Scenes/World.tscn")
 	elif first_level_item == 3:
-		get_tree().change_scene("res://Scenes/MainMenu.tscn")
+		get_tree().change_scene("res://Scenes/UI/MainMenu.tscn")
 
 
 func _ready():
