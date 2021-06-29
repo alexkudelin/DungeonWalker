@@ -3,11 +3,11 @@
 [ext_resource path="res://Assets/Born2bSportyV2.ttf" type="DynamicFontData" id=1]
 [ext_resource path="res://Scripts/UI/GameSetupMenu.gd" type="Script" id=2]
 
-[sub_resource type="DynamicFont" id=2]
+[sub_resource type="DynamicFont" id=1]
 size = 72
 font_data = ExtResource( 1 )
 
-[sub_resource type="DynamicFont" id=1]
+[sub_resource type="DynamicFont" id=2]
 size = 60
 font_data = ExtResource( 1 )
 
@@ -52,7 +52,7 @@ size_flags_horizontal = 3
 margin_left = 377.0
 margin_right = 853.0
 margin_bottom = 72.0
-custom_fonts/font = SubResource( 2 )
+custom_fonts/font = SubResource( 1 )
 text = "Set up generator"
 align = 1
 valign = 1
@@ -81,7 +81,7 @@ margin_top = 5.0
 margin_right = 30.0
 margin_bottom = 65.0
 rect_min_size = Vector2( 30, 0 )
-custom_fonts/font = SubResource( 1 )
+custom_fonts/font = SubResource( 2 )
 text = ">"
 
 [node name="SeedInput" type="HBoxContainer" parent="MarginContainer/VBoxContainer/GeneratorControls/SeedInput/SeedInput"]
@@ -96,7 +96,7 @@ margin_top = 5.0
 margin_right = 115.0
 margin_bottom = 65.0
 rect_min_size = Vector2( 10, 0 )
-custom_fonts/font = SubResource( 1 )
+custom_fonts/font = SubResource( 2 )
 text = "Seed:"
 
 [node name="Input" type="LineEdit" parent="MarginContainer/VBoxContainer/GeneratorControls/SeedInput/SeedInput/SeedInput"]
@@ -105,7 +105,7 @@ margin_right = 1195.0
 margin_bottom = 70.0
 rect_min_size = Vector2( 500, 0 )
 size_flags_horizontal = 3
-custom_fonts/font = SubResource( 1 )
+custom_fonts/font = SubResource( 2 )
 align = 1
 context_menu_enabled = false
 shortcut_keys_enabled = false
@@ -133,7 +133,7 @@ margin_top = 64.0
 margin_right = 30.0
 margin_bottom = 124.0
 rect_min_size = Vector2( 30, 0 )
-custom_fonts/font = SubResource( 1 )
+custom_fonts/font = SubResource( 2 )
 text = ">"
 
 [node name="AlgorithmsList" type="HBoxContainer" parent="MarginContainer/VBoxContainer/GeneratorControls/AlgorithmsList/AlgorithmsList"]
@@ -148,7 +148,7 @@ margin_top = 64.0
 margin_right = 216.0
 margin_bottom = 124.0
 rect_min_size = Vector2( 10, 0 )
-custom_fonts/font = SubResource( 1 )
+custom_fonts/font = SubResource( 2 )
 text = "Algorithm:"
 
 [node name="AlgorithmsList" type="VBoxContainer" parent="MarginContainer/VBoxContainer/GeneratorControls/AlgorithmsList/AlgorithmsList/AlgorithmsList"]
@@ -167,7 +167,7 @@ size_flags_horizontal = 5
 margin_right = 30.0
 margin_bottom = 60.0
 rect_min_size = Vector2( 30, 0 )
-custom_fonts/font = SubResource( 1 )
+custom_fonts/font = SubResource( 2 )
 text = ">"
 
 [node name="Selector" type="Label" parent="MarginContainer/VBoxContainer/GeneratorControls/AlgorithmsList/AlgorithmsList/AlgorithmsList/AlgorithmsList/BSP"]
@@ -175,7 +175,7 @@ margin_left = 34.0
 margin_right = 64.0
 margin_bottom = 60.0
 rect_min_size = Vector2( 30, 0 )
-custom_fonts/font = SubResource( 1 )
+custom_fonts/font = SubResource( 2 )
 text = "*"
 
 [node name="Label" type="Label" parent="MarginContainer/VBoxContainer/GeneratorControls/AlgorithmsList/AlgorithmsList/AlgorithmsList/AlgorithmsList/BSP"]
@@ -183,7 +183,7 @@ margin_left = 68.0
 margin_right = 146.0
 margin_bottom = 60.0
 rect_min_size = Vector2( 10, 0 )
-custom_fonts/font = SubResource( 1 )
+custom_fonts/font = SubResource( 2 )
 text = "BSP"
 
 [node name="CA" type="HBoxContainer" parent="MarginContainer/VBoxContainer/GeneratorControls/AlgorithmsList/AlgorithmsList/AlgorithmsList/AlgorithmsList"]
@@ -197,7 +197,7 @@ size_flags_horizontal = 5
 margin_right = 30.0
 margin_bottom = 60.0
 rect_min_size = Vector2( 30, 0 )
-custom_fonts/font = SubResource( 1 )
+custom_fonts/font = SubResource( 2 )
 text = ">"
 
 [node name="Selector" type="Label" parent="MarginContainer/VBoxContainer/GeneratorControls/AlgorithmsList/AlgorithmsList/AlgorithmsList/AlgorithmsList/CA"]
@@ -205,7 +205,7 @@ margin_left = 34.0
 margin_right = 64.0
 margin_bottom = 60.0
 rect_min_size = Vector2( 30, 0 )
-custom_fonts/font = SubResource( 1 )
+custom_fonts/font = SubResource( 2 )
 text = "*"
 
 [node name="Label" type="Label" parent="MarginContainer/VBoxContainer/GeneratorControls/AlgorithmsList/AlgorithmsList/AlgorithmsList/AlgorithmsList/CA"]
@@ -213,7 +213,7 @@ margin_left = 68.0
 margin_right = 120.0
 margin_bottom = 60.0
 rect_min_size = Vector2( 10, 0 )
-custom_fonts/font = SubResource( 1 )
+custom_fonts/font = SubResource( 2 )
 text = "CA"
 
 [node name="BSP_CA" type="HBoxContainer" parent="MarginContainer/VBoxContainer/GeneratorControls/AlgorithmsList/AlgorithmsList/AlgorithmsList/AlgorithmsList"]
@@ -226,7 +226,7 @@ size_flags_horizontal = 5
 margin_right = 30.0
 margin_bottom = 60.0
 rect_min_size = Vector2( 30, 0 )
-custom_fonts/font = SubResource( 1 )
+custom_fonts/font = SubResource( 2 )
 text = ">"
 
 [node name="Selector" type="Label" parent="MarginContainer/VBoxContainer/GeneratorControls/AlgorithmsList/AlgorithmsList/AlgorithmsList/AlgorithmsList/BSP_CA"]
@@ -234,7 +234,7 @@ margin_left = 34.0
 margin_right = 64.0
 margin_bottom = 60.0
 rect_min_size = Vector2( 30, 0 )
-custom_fonts/font = SubResource( 1 )
+custom_fonts/font = SubResource( 2 )
 text = "*"
 
 [node name="Label" type="Label" parent="MarginContainer/VBoxContainer/GeneratorControls/AlgorithmsList/AlgorithmsList/AlgorithmsList/AlgorithmsList/BSP_CA"]
@@ -242,7 +242,7 @@ margin_left = 68.0
 margin_right = 221.0
 margin_bottom = 60.0
 rect_min_size = Vector2( 10, 0 )
-custom_fonts/font = SubResource( 1 )
+custom_fonts/font = SubResource( 2 )
 text = "BSP-CA"
 
 [node name="StartButton" type="CenterContainer" parent="MarginContainer/VBoxContainer/GeneratorControls"]
@@ -256,8 +256,8 @@ rect_min_size = Vector2( 450, 0 )
 size_flags_horizontal = 4
 
 [node name="StartButton" type="HBoxContainer" parent="MarginContainer/VBoxContainer/GeneratorControls/StartButton"]
-margin_left = 78.0
-margin_right = 371.0
+margin_left = 101.0
+margin_right = 349.0
 margin_bottom = 60.0
 custom_constants/separation = 5
 
@@ -265,16 +265,16 @@ custom_constants/separation = 5
 margin_right = 30.0
 margin_bottom = 60.0
 rect_min_size = Vector2( 30, 0 )
-custom_fonts/font = SubResource( 1 )
+custom_fonts/font = SubResource( 2 )
 text = ">"
 
 [node name="Label" type="Label" parent="MarginContainer/VBoxContainer/GeneratorControls/StartButton/StartButton"]
 margin_left = 35.0
-margin_right = 293.0
+margin_right = 248.0
 margin_bottom = 60.0
 rect_min_size = Vector2( 10, 0 )
-custom_fonts/font = SubResource( 1 )
-text = "Start game!"
+custom_fonts/font = SubResource( 2 )
+text = "Next step"
 
 [node name="BackButton" type="CenterContainer" parent="MarginContainer/VBoxContainer"]
 margin_left = 390.0
@@ -294,7 +294,7 @@ custom_constants/separation = 5
 margin_right = 30.0
 margin_bottom = 60.0
 rect_min_size = Vector2( 30, 0 )
-custom_fonts/font = SubResource( 1 )
+custom_fonts/font = SubResource( 2 )
 text = ">"
 
 [node name="Label" type="Label" parent="MarginContainer/VBoxContainer/BackButton/BackButton"]
@@ -302,7 +302,7 @@ margin_left = 35.0
 margin_right = 450.0
 margin_bottom = 60.0
 rect_min_size = Vector2( 10, 0 )
-custom_fonts/font = SubResource( 1 )
+custom_fonts/font = SubResource( 2 )
 text = "Back to main menu"
 
 [connection signal="text_changed" from="MarginContainer/VBoxContainer/GeneratorControls/SeedInput/SeedInput/SeedInput/Input" to="." method="_on_seed_changed"]

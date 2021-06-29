@@ -166,6 +166,8 @@ func _clean(w, h):
 			WALLS.set_cell(i, j, TextureMaps.WallTextures[Constants.WallTileCode.EMPTY][0])
 			STUFF.set_cell(i, j, TextureMaps.StuffTextures[Constants.StuffTileCode.EMPTY][0])
 
+func _add_player(pos):
+	PLAYER.position = pos
 
 func _create_map():
 	_clean(W, H)
@@ -190,8 +192,7 @@ func _create_map():
 	var map = gen.run(W, H)
 
 	_draw_dungeon(map)
-
-	PLAYER.position = FLOOR.map_to_world(Vector2(map.start[0], map.start[1]))
+	_add_player(FLOOR.map_to_world(map.start))
 
 	_add_event_listeners()
 

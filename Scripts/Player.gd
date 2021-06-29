@@ -1,10 +1,14 @@
 extends KinematicBody2D
 
-const ACCELERATION = 400
-const MAX_SPEED = 125
-const FRICTION = 400
+var ACCELERATION = 400
+var MAX_SPEED = 125
+var FRICTION = 400
 
-onready var _animated_sprite = $AnimatedSprite
+onready var _animated_sprite = null
+
+const KnightMaleAnimatedSprite = preload("res://Scenes/Heroes/KnightMaleAnimatedSprite.tscn")
+const LizardMaleAnimatedSprite = preload("res://Scenes/Heroes/LizardMaleAnimatedSprite.tscn")
+const WizardAnimatedSprite = preload("res://Scenes/Heroes/WizardAnimatedSprite.tscn")
 
 var velocity = Vector2.ZERO
 
@@ -37,3 +41,23 @@ func _physics_process(delta):
 		_animated_sprite.play("idle")
 
 	velocity = move_and_slide(velocity)
+
+
+func _ready():
+	var hero_sprite = null
+
+	if Global.hero == 0:
+		ACCELERATION = 250
+		MAX_SPEED = 125
+		hero_sprite = KnightMaleAnimatedSprite.instance()
+	elif Global.hero == 1:
+		ACCELERATION = 175
+		MAX_SPEED = 75
+		hero_sprite = WizardAnimatedSprite.instance()
+	elif Global.hero == 2:
+		MAX_SPEED = 175
+		hero_sprite = LizardMaleAnimatedSprite.instance()
+		
+	_animated_sprite = hero_sprite
+
+	add_child(hero_sprite)

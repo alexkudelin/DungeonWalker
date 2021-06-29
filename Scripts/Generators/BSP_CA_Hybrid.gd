@@ -167,7 +167,7 @@ func _add_enter_and_exit(root):
 	STUFF[enter_point[1]][enter_point[0]] = Constants.StuffTileCode.LEVEL_ENTER
 	STUFF[exit_point[1]][exit_point[0]] = Constants.StuffTileCode.LEVEL_EXIT
 
-	return [enter_point, exit_point]
+	return {"enter": enter_point, "exit": exit_point}
 
 
 func _init_level(w, h):
@@ -261,14 +261,14 @@ func run(w, h, max_depth=null):
 
 	CommonAlgos.new(rng).add_stuff(FLOOR, WALLS, STUFF)
 
-	var start_and_end = _add_enter_and_exit(root)
+	var enter_and_exit = _add_enter_and_exit(root)
 
 	return {
 		"floor": FLOOR,
 		"walls": WALLS,
 		"stuff": STUFF,
-		"start": start_and_end[0],
-		"end": start_and_end[1]
+		"start": Vector2(enter_and_exit.enter[0], enter_and_exit.enter[1]),
+		"end": Vector2(enter_and_exit.exit[0], enter_and_exit.exit[1]),
 	}
 
 

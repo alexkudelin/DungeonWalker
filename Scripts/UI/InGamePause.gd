@@ -27,6 +27,7 @@ func set_visibility(state):
 	for child in get_children():
 		child.visible = state
 
+
 func set_current_selection(_current_item):
 	conitnue_marker.text = ""
 	return_to_menu_marker.text = ""
@@ -41,14 +42,15 @@ func set_current_selection(_current_item):
 
 
 func _process(_delta):
-	if Input.is_action_just_pressed("ui_down") and current_item < 2:
-		current_item += 1
-		set_current_selection(current_item)
-	elif Input.is_action_just_pressed("ui_up") and current_item > 0:
-		current_item -= 1
-		set_current_selection(current_item)
-	elif Input.is_action_just_pressed("ui_accept"):
-		_handle_selection()
+	if get_tree().paused:
+		if Input.is_action_just_pressed("ui_down") and current_item < 2:
+			current_item += 1
+			set_current_selection(current_item)
+		elif Input.is_action_just_pressed("ui_up") and current_item > 0:
+			current_item -= 1
+			set_current_selection(current_item)
+		elif Input.is_action_just_pressed("ui_accept"):
+			_handle_selection()
 
 
 func _handle_selection():
@@ -62,4 +64,3 @@ func _handle_selection():
 		get_tree().paused = false
 		set_visibility(false)
 		get_tree().quit(0)
-
