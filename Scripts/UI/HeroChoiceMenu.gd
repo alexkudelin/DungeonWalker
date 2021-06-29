@@ -52,10 +52,6 @@ func _handle_first_level_menu():
 	elif Input.is_action_just_pressed("ui_up") and first_level_item > 0:
 		first_level_item -= 1
 		set_current_selection(menu_level, first_level_item, selected_hero)
-	# elif Input.is_action_just_pressed("ui_right"):
-	# 	if first_level_item == 0:
-	# 		menu_level += 1
-	# 		set_current_selection(menu_level, first_level_item, selected_hero)
 	elif Input.is_action_just_pressed("ui_accept"):
 		_handle_accept()
 
@@ -67,10 +63,6 @@ func _handle_second_level_menu():
 	elif Input.is_action_just_pressed("ui_left") and selected_hero > 0:
 		selected_hero -= 1
 		set_current_selection(menu_level, first_level_item, selected_hero)
-	# elif Input.is_action_just_pressed("ui_left"):
-	# 	if first_level_item == 1:
-	# 		menu_level -= 1
-	# 		set_current_selection(menu_level, first_level_item, second_level_item, selected_hero)
 	elif Input.is_action_just_pressed("ui_accept"):
 		_handle_accept()
 
