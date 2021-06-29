@@ -176,7 +176,7 @@ func _create_map():
 
 	if cur_seed == null:
 		rng.randomize()
-		Global._seed = rng.seed
+		Global._seed = rng.seed.hash()
 	else:
 		rng.set_seed(cur_seed.hash())
 

@@ -35,6 +35,6 @@ format = 1
 current = true
 zoom = Vector2( 0.375, 0.375 )
 
-[node name="InGamePause" parent="." instance=ExtResource( 4 )]
-
 [node name="ItemsCollected" parent="." instance=ExtResource( 7 )]
+
+[node name="InGamePause" parent="." instance=ExtResource( 4 )]

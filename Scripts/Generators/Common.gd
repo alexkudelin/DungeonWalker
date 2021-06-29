@@ -13,26 +13,45 @@ var stuff_list = [
 ]
 
 func _check_neighbourhood(nb, nc):
+	var empty = Constants.WallTileCode.EMPTY
+
 	if nc == 7:
-		return nb[1][2] == Constants.WallTileCode.EMPTY or nb[3][2] == Constants.WallTileCode.EMPTY or nb[4][2] == Constants.WallTileCode.EMPTY or nb[7][2] == Constants.WallTileCode.EMPTY
+		return (nb[1][2] == empty or nb[3][2] == empty or nb[4][2] == empty or nb[7][2] == empty)
 	elif nc == 6:
 		return (
-			(nb[1][2] == Constants.WallTileCode.EMPTY and nb[2][2] == Constants.WallTileCode.EMPTY or nb[4][2] == Constants.WallTileCode.EMPTY and nb[7][2] == Constants.WallTileCode.EMPTY or nb[5][2] == Constants.WallTileCode.EMPTY and nb[6][2] == Constants.WallTileCode.EMPTY or nb[0][2] == Constants.WallTileCode.EMPTY and nb[3][2] == Constants.WallTileCode.EMPTY) or
-			(nb[0][2] == Constants.WallTileCode.EMPTY and nb[1][2] == Constants.WallTileCode.EMPTY or nb[2][2] == Constants.WallTileCode.EMPTY and nb[4][2] == Constants.WallTileCode.EMPTY or nb[6][2] == Constants.WallTileCode.EMPTY and nb[7][2] == Constants.WallTileCode.EMPTY or nb[3][2] == Constants.WallTileCode.EMPTY and nb[5][2] == Constants.WallTileCode.EMPTY)
+			(nb[1][2] == empty and nb[2][2] == empty) or
+			(nb[4][2] == empty and nb[7][2] == empty) or
+			(nb[5][2] == empty and nb[6][2] == empty) or
+			(nb[0][2] == empty and nb[3][2] == empty) or
+			(nb[0][2] == empty and nb[1][2] == empty) or
+			(nb[2][2] == empty and nb[4][2] == empty) or
+			(nb[6][2] == empty and nb[7][2] == empty) or
+			(nb[3][2] == empty and nb[5][2] == empty)
 		)
 	elif nc == 5:
 		return (
 			(
-				(nb[0][2] == Constants.WallTileCode.EMPTY and nb[1][2] == Constants.WallTileCode.EMPTY and nb[2][2] == Constants.WallTileCode.EMPTY) or
-				(nb[2][2] == Constants.WallTileCode.EMPTY and nb[4][2] == Constants.WallTileCode.EMPTY and nb[7][2] == Constants.WallTileCode.EMPTY) or
-				(nb[7][2] == Constants.WallTileCode.EMPTY and nb[6][2] == Constants.WallTileCode.EMPTY and nb[5][2] == Constants.WallTileCode.EMPTY) or
-				(nb[5][2] == Constants.WallTileCode.EMPTY and nb[3][2] == Constants.WallTileCode.EMPTY and nb[0][2] == Constants.WallTileCode.EMPTY)
+				(nb[0][2] == empty and nb[1][2] == empty and nb[2][2] == empty) or
+				(nb[2][2] == empty and nb[4][2] == empty and nb[7][2] == empty) or
+				(nb[7][2] == empty and nb[6][2] == empty and nb[5][2] == empty) or
+				(nb[5][2] == empty and nb[3][2] == empty and nb[0][2] == empty)
 			) or (
-				(nb[5][2] == Constants.WallTileCode.EMPTY and nb[3][2] == Constants.WallTileCode.EMPTY and nb[0][2] == Constants.WallTileCode.EMPTY and nb[1][2] == Constants.WallTileCode.EMPTY and nb[2][2] == Constants.WallTileCode.EMPTY) or
-				(nb[0][2] == Constants.WallTileCode.EMPTY and nb[1][2] == Constants.WallTileCode.EMPTY and nb[2][2] == Constants.WallTileCode.EMPTY and nb[4][2] == Constants.WallTileCode.EMPTY and nb[7][2] == Constants.WallTileCode.EMPTY) or
-				(nb[2][2] == Constants.WallTileCode.EMPTY and nb[4][2] == Constants.WallTileCode.EMPTY and nb[7][2] == Constants.WallTileCode.EMPTY and nb[6][2] == Constants.WallTileCode.EMPTY and nb[5][2] == Constants.WallTileCode.EMPTY) or
-				(nb[7][2] == Constants.WallTileCode.EMPTY and nb[6][2] == Constants.WallTileCode.EMPTY and nb[5][2] == Constants.WallTileCode.EMPTY and nb[3][2] == Constants.WallTileCode.EMPTY and nb[0][2] == Constants.WallTileCode.EMPTY)
+				(nb[5][2] == empty and nb[3][2] == empty and nb[0][2] == empty and nb[1][2] == empty and nb[2][2] == empty) or
+				(nb[0][2] == empty and nb[1][2] == empty and nb[2][2] == empty and nb[4][2] == empty and nb[7][2] == empty) or
+				(nb[2][2] == empty and nb[4][2] == empty and nb[7][2] == empty and nb[6][2] == empty and nb[5][2] == empty) or
+				(nb[7][2] == empty and nb[6][2] == empty and nb[5][2] == empty and nb[3][2] == empty and nb[0][2] == empty)
 			)
+		)
+	elif nc == 4:
+		return (
+			(nb[0][2] == empty and nb[1][2] == empty and nb[2][2] == empty and nb[4][2] == empty) or
+			(nb[1][2] == empty and nb[2][2] == empty and nb[4][2] == empty and nb[7][2] == empty) or
+			(nb[2][2] == empty and nb[4][2] == empty and nb[7][2] == empty and nb[6][2] == empty) or
+			(nb[4][2] == empty and nb[7][2] == empty and nb[6][2] == empty and nb[5][2] == empty) or
+			(nb[7][2] == empty and nb[6][2] == empty and nb[5][2] == empty and nb[3][2] == empty) or
+			(nb[6][2] == empty and nb[5][2] == empty and nb[3][2] == empty and nb[0][2] == empty) or
+			(nb[5][2] == empty and nb[3][2] == empty and nb[0][2] == empty and nb[1][2] == empty) or
+			(nb[3][2] == empty and nb[0][2] == empty and nb[1][2] == empty and nb[2][2] == empty)
 		)
 
 
